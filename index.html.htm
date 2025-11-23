@@ -2,19 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- 📱 மொபைல் வடிவமைப்புக்கான மெட்டா டேக் -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Quick Order App</title>
     
+    <!-- நவீன Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary-color: #00a550; 
+            --primary-color: #00a550; /* பிரதான பச்சை நிறம் */
             --bg-color: #f4f5f8;
             --white: #ffffff;
             --text-dark: #2d3436;
             --text-light: #636e72;
             --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --unavailable: #b9b9b9; /* கிடைக்காத பொருட்களுக்கான நிறம் */
         }
 
         * {
@@ -30,6 +33,7 @@
             justify-content: center;
         }
 
+        /* மொபைல் கண்டெய்னர் */
         .app-container {
             width: 100%;
             max-width: 480px; 
@@ -37,7 +41,7 @@
             min-height: 100vh;
             position: relative;
             box-shadow: 0 0 20px rgba(0,0,0,0.05);
-            padding-bottom: 100px; 
+            padding-bottom: 100px; /* கீழே உள்ள Cart பட்டனுக்கான இடம் */
         }
 
         /* --- Header --- */
@@ -95,8 +99,14 @@
             border: 1px solid #f8f8f8;
             transition: transform 0.2s;
         }
+        
+        /* கிடைக்காத பொருட்களின் ஸ்டைல் */
+        .menu-card.unavailable {
+            opacity: 0.5;
+            pointer-events: none;
+        }
 
-        .menu-card:active {
+        .menu-card:not(.unavailable):active {
             transform: scale(0.98); 
         }
 
@@ -132,6 +142,7 @@
             flex-direction: column;
             align-items: center;
             min-width: 70px;
+            position: relative; 
         }
 
         .qty-controls {
@@ -157,6 +168,21 @@
             align-items: center;
             justify-content: center;
         }
+        
+        /* கிடைக்காததைக் குறிக்கும் Tag */
+        .unavailable-tag {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--unavailable);
+            color: white;
+            padding: 5px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
 
         .qty-val {
             font-size: 13px;
@@ -273,145 +299,199 @@
 <body>
 
 <div class="app-container">
+    <!-- தலைப்பு பகுதி -->
     <div class="header">
         <div class="shop-info">
-            <h1 id="shopTitle">Loading...</h1>
-            <p>ONLINE ORDERING</p>
+            <h1 id="shopTitle">ஏற்றுகிறது...</h1>
+            <p>ஆன்லைன் ஆர்டர்</p>
         </div>
         <div class="status-dot"></div>
     </div>
 
+    <!-- மெனு பகுதி -->
     <div id="menuContainer" class="menu-container">
         <div class="loading-screen">
             <div class="spinner"></div>
-            <span>Loading Menu...</span>
+            <span>மெனுவை ஏற்றுகிறது... (Loading Menu)</span>
         </div>
     </div>
 </div>
 
+<!-- Cart பட்டன் (கீழே மிதக்கும்) -->
 <div class="floating-cart" id="floatingCart" onclick="openCheckout()">
     <div class="cart-text">
-        <span id="itemCount">0 Items</span>
+        <span id="itemCount">0 பொருட்கள்</span>
         <strong id="totalPrice">₹0</strong>
     </div>
-    <div class="cart-arrow">Proceed &rarr;</div>
+    <div class="cart-arrow">தொடரவும் &rarr;</div>
 </div>
 
+<!-- Checkout Modal (மறைக்கப்பட்டது) -->
 <div class="modal-overlay" id="checkoutModal">
     <div class="modal-sheet">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div class="modal-title">Complete Order</div>
+            <div class="modal-title">ஆர்டரை முடிக்கவும் (Complete Order)</div>
             <div onclick="closeCheckout()" style="font-size:24px; cursor:pointer; padding:10px;">&times;</div>
         </div>
         
         <div class="input-group">
-            <label class="input-label">Your Name</label>
-            <input type="text" id="cName" class="input-field" placeholder="Enter name">
+            <label class="input-label">உங்கள் பெயர்</label>
+            <input type="text" id="cName" class="input-field" placeholder="பெயரை உள்ளிடவும்">
         </div>
         <div class="input-group">
-            <label class="input-label">Mobile Number</label>
-            <input type="tel" id="cPhone" class="input-field" placeholder="10-digit mobile number">
+            <label class="input-label">மொபைல் எண்</label>
+            <input type="tel" id="cPhone" class="input-field" placeholder="10 இலக்க மொபைல் எண்">
         </div>
         <div class="input-group">
-            <label class="input-label">Delivery Address</label>
-            <textarea id="cAddress" class="input-field" rows="2" placeholder="Room No, Street Name"></textarea>
+            <label class="input-label">முகவரி</label>
+            <textarea id="cAddress" class="input-field" rows="2" placeholder="அறை எண், தெருப் பெயர்"></textarea>
         </div>
 
-        <button class="place-order-btn" onclick="submitOrder()">Place Order via WhatsApp</button>
+        <button class="place-order-btn" onclick="submitOrder()">WhatsApp வழியாக ஆர்டர் செய்யவும்</button>
     </div>
 </div>
 
 <script>
-    // ✅ URL & PHONE NUMBER SETTINGS ✅
+    // ⚠️⚠️⚠️ உங்கள் புதிய Apps Script URL இங்கே வெற்றிகரமாகச் சேர்க்கப்பட்டுள்ளது ⚠️⚠️⚠️
     const scriptURL = "https://script.google.com/macros/s/AKfycby4D0cHOZLeGNWgpZh1phZxvPGz1MsZtuav8KSPI_eMuPCjJgz5j_tNOpsxquqIzyBR/exec"; 
     
-    // 🔥 YOUR NUMBER HERE 🔥
-    // Google Sheet-ல் இருந்தாலும் இல்லாவிட்டாலும், இந்த நம்பருக்கு மெசேஜ் போகும்.
-    const FIXED_OWNER_NUMBER = "916379914185"; 
-
-    // URL Logic
+    // URL-ல் இருந்து Shop ID-ஐ எடுத்தல்
     const urlParams = new URLSearchParams(window.location.search);
-    let SHOP_ID = urlParams.get('shopId');
-    let menuItems = [];
+    const SHOP_ID = urlParams.get('shopId');
 
-    // 1. ஆரம்பம்
+    let menuItems = [];
+    let ownerNumber = "";
+    let shopName = ""; 
+
+    // 1. ஆரம்பம் (Initialization)
     window.onload = () => {
         if (!SHOP_ID) {
-            SHOP_ID = "mess_001"; // Default
+            showError("❌ கடை லிங்க் தவறானது. தயவுசெய்து URL-ஐ சரிபார்க்கவும்.");
+            return;
         }
         fetchShopData();
     };
 
-    // 2. Fetch Data
+    // 2. Google Sheet-ல் இருந்து டேட்டாவை எடுத்தல்
     function fetchShopData() {
+        // Network error handling
         fetch(`${scriptURL}?shopId=${SHOP_ID}`)
-        .then(response => response.json())
+        .then(response => {
+             if (!response.ok) throw new Error('Network response was not ok');
+             return response.json();
+        })
         .then(data => {
             if (data.status === "ACTIVE") {
+                ownerNumber = data.ownerNumber;
+                shopName = data.shopName; // Apps Script-ல் இருந்து கடைப் பெயரைப் பெறுகிறது
                 menuItems = data.menu.map(item => ({...item, qty: 0}));
-                document.getElementById('shopTitle').innerText = SHOP_ID.replace('_', ' ').toUpperCase(); 
+                
+                // கடைப் பெயரை திரையில் காட்டுதல்
+                document.getElementById('shopTitle').innerText = shopName || SHOP_ID.replace('_', ' ').toUpperCase(); 
+                
                 renderMenu();
+            } else if (data.status === "INACTIVE") {
+                showError("⚠️ இந்த கடை சேவை தற்காலிகமாக நிறுத்தப்பட்டுள்ளது.");
             } else {
-                showError("⚠️ Shop Offline or Error.");
+                showError("❌ கடை விவரங்கள் கிடைக்கவில்லை அல்லது ஸ்கிரிப்ட் பிழை.");
             }
         })
-        .catch(err => {
-            // Even if fetch fails, show error but let page load if cached (handled by showing error)
-            showError(`Loading Error. Refresh Page.`);
+        .catch(error => {
+            showError(`❌ இணைப்புப் பிழை. உங்கள் Script URL மற்றும் Deployment Access ('Anyone') ஐ சரிபார்க்கவும். <br><br> விவரம்: ${error.message}`);
         });
     }
 
-    // 3. Render Menu
+    // 3. மெனுவை திரையில் காட்டுதல்
     function renderMenu() {
         const container = document.getElementById('menuContainer');
         container.innerHTML = "";
+        
+        // கிடைக்கக்கூடிய மற்றும் கிடைக்காத பொருட்களை பிரித்தல்
+        const availableItems = menuItems.filter(item => item.isAvailable !== false);
+        const unavailableItems = menuItems.filter(item => item.isAvailable === false);
 
-        if(menuItems.length === 0) {
-            container.innerHTML = "<div class='loading-screen'>No items found.</div>";
+        if(availableItems.length === 0 && unavailableItems.length === 0) {
+            container.innerHTML = "<div class='loading-screen'>பொருட்கள் எதுவும் கிடைக்கவில்லை. MenuData JSON-ஐ சரிபார்க்கவும்.</div>";
             return;
         }
-
-        menuItems.forEach(item => {
-            const card = document.createElement('div');
-            card.className = "menu-card";
-            const currentQty = menuItems.find(i => i.id === item.id).qty;
-
-            card.innerHTML = `
-                <img src="${item.imageUrl}" class="item-image" onerror="this.src='https://via.placeholder.com/80?text=Food'">
-                <div class="item-details">
-                    <span class="item-name">${item.name}</span>
-                    <span class="item-price">₹${item.price}</span>
-                </div>
-                <div class="add-btn-container">
-                    ${currentQty === 0 ? 
-                        `<button class="qty-btn" style="width:60px; color:green; border:1px solid #ddd; border-radius:5px; font-size:12px;" onclick="updateQty(${item.id}, 1)">ADD</button>` :
-                        `<div class="qty-controls">
-                            <button class="qty-btn" onclick="updateQty(${item.id}, -1)">-</button>
-                            <div class="qty-val">${currentQty}</div>
-                            <button class="qty-btn" onclick="updateQty(${item.id}, 1)">+</button>
-                        </div>`
-                    }
-                </div>
-            `;
-            container.appendChild(card);
+        
+        // கிடைக்கக்கூடிய பொருட்களை காட்டுதல்
+        availableItems.forEach(item => {
+            container.appendChild(createMenuItemCard(item, false)); 
         });
+        
+        // கிடைக்காத பொருட்களை காட்டுதல்
+        if (unavailableItems.length > 0) {
+             const title = document.createElement('h2');
+             title.style.fontSize = '16px';
+             title.style.fontWeight = '600';
+             title.style.color = 'var(--unavailable)';
+             title.style.marginTop = '20px';
+             title.innerText = '❌ தற்காலிகமாக கிடைக்காதவை (Unavailable)';
+             container.appendChild(title);
+             
+             unavailableItems.forEach(item => {
+                container.appendChild(createMenuItemCard(item, true)); 
+             });
+        }
+    }
+    
+    // மெனு கார்டை உருவாக்கும் செயல்பாடு
+    function createMenuItemCard(item, isUnavailable) {
+        const card = document.createElement('div');
+        card.className = "menu-card";
+        if (isUnavailable) {
+            card.classList.add('unavailable');
+        }
+
+        const currentQty = menuItems.find(i => i.id === item.id).qty;
+
+        let controlsHTML;
+        if (isUnavailable) {
+            controlsHTML = `<div class="unavailable-tag">SOLD OUT</div>`;
+        } else if (currentQty === 0) {
+            controlsHTML = `<button class="qty-btn" style="width:60px; color:green; border:1px solid #ddd; border-radius:5px; font-size:12px;" onclick="updateQty(${item.id}, 1)">ADD</button>`;
+        } else {
+            controlsHTML = `
+                <div class="qty-controls">
+                    <button class="qty-btn" onclick="updateQty(${item.id}, -1)">-</button>
+                    <div class="qty-val" id="qty-${item.id}">${currentQty}</div>
+                    <button class="qty-btn" onclick="updateQty(${item.id}, 1)">+</button>
+                </div>`;
+        }
+
+
+        card.innerHTML = `
+            <img src="${item.imageUrl}" class="item-image" onerror="this.src='https://placehold.co/80x80/9e9e9e/ffffff?text=Food'">
+            <div class="item-details">
+                <span class="item-name">${item.name}</span>
+                <span class="item-price">₹${item.price}</span>
+            </div>
+            <div class="add-btn-container">
+                ${controlsHTML}
+            </div>
+        `;
+        return card;
     }
 
-    // 4. Update Qty
+
+    // 4. Quantity Update லாஜிக்
     function updateQty(id, change) {
         const item = menuItems.find(i => i.id === id);
-        if (item && item.qty + change >= 0) {
-            item.qty += change;
-            renderMenu(); 
-            updateCartDisplay();
+        if (item) {
+            if (item.qty + change >= 0) {
+                item.qty += change;
+                renderMenu(); 
+                updateCartDisplay();
+            }
         }
     }
 
-    // 5. Cart Logic
+    // 5. Cart பட்டனை அப்டேட் செய்தல்
     function updateCartDisplay() {
         const cartItems = menuItems.filter(i => i.qty > 0);
         const total = cartItems.reduce((sum, i) => sum + (i.price * i.qty), 0);
-        const count = cartItems.reduce((sum, i) => sum + i.qty, 0);
+        const count = cartItems.reduce((sum, i => sum + i.qty), 0);
 
         const cartBar = document.getElementById('floatingCart');
         if (count > 0) {
@@ -423,59 +503,78 @@
         }
     }
 
-    // 6. Modal
-    function openCheckout() { document.getElementById('checkoutModal').style.display = "flex"; }
-    function closeCheckout() { document.getElementById('checkoutModal').style.display = "none"; }
+    // 6. Checkout Modal திறத்தல் / மூடுதல்
+    function openCheckout() {
+        document.getElementById('checkoutModal').style.display = "flex";
+    }
+    function closeCheckout() {
+        document.getElementById('checkoutModal').style.display = "none";
+    }
 
-    // 7. 🔥 SUBMIT ORDER (FIXED) 🔥
+    // 7. ஆர்டர் சமர்ப்பித்தல்
     function submitOrder() {
         const name = document.getElementById('cName').value.trim();
         const phone = document.getElementById('cPhone').value.trim();
         const address = document.getElementById('cAddress').value.trim();
 
         if (!name || !phone || !address) {
-            alert("Please fill all details.");
+            alert("⚠️ தயவுசெய்து பெயர், மொபைல் எண் மற்றும் முகவரி ஆகிய அனைத்து விவரங்களையும் நிரப்பவும்.");
             return;
         }
 
         const cartItems = menuItems.filter(i => i.qty > 0);
         const total = cartItems.reduce((sum, i) => sum + (i.price * i.qty), 0);
         
-        let itemsListWA = cartItems.map(i => `${i.name} x ${i.qty}`).join("%0A");
-        let itemsListSheet = cartItems.map(i => `${i.name} (${i.qty})`).join(", ");
+        // WhatsApp Message தயார் செய்தல்
+        let itemsListWA = cartItems.map(i => `* ${i.name} x ${i.qty}`).join("%0A");
+        let itemsListSheet = cartItems.map(i => `${i.name} (${i.qty}) - ₹${i.price * i.qty}`).join(" | ");
 
-        const msg = `*NEW ORDER!* 🛵%0A%0A*Name:* ${name}%0A*Phone:* ${phone}%0A*Address:* ${address}%0A%0A*Order:*%0A${itemsListWA}%0A%0A*Total: ₹${total}*`;
+        // Order Message includes the dynamic Shop Name
+        const msg = `*💥 புதிய ஆர்டர்!* 🛵%0A%0A*கடை:* ${shopName || SHOP_ID.toUpperCase()}%0A*வாடிக்கையாளர்:* ${name}%0A*மொபைல்:* ${phone}%0A*முகவரி:* ${address}%0A%0A*ஆர்டர் விவரம்:*%0A${itemsListWA}%0A%0A*மொத்த பில்: ₹${total}*%0A%0A_தயவுசெய்து ஆர்டரை உறுதிப்படுத்தவும்._`;
         
-        // 🚀 Using HARDCODED Number
-        const waLink = `https://api.whatsapp.com/send?phone=${FIXED_OWNER_NUMBER}&text=${msg}`;
+        const waLink = `https://wa.me/${ownerNumber}?text=${msg}`;
 
         // UI Feedback
         const btn = document.querySelector('.place-order-btn');
-        btn.innerText = "Redirecting...";
-        
-        // 1. Send to Sheet (Background)
+        btn.innerText = "ஆர்டரைச் சமர்ப்பிக்கிறது...";
+        btn.disabled = true;
+
+        // Google Sheet-க்கு டேட்டாவை அனுப்புதல் (Background)
         fetch(scriptURL, {
             method: 'POST',
-            mode: 'no-cors',
+            mode: 'no-cors', 
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 shopId: SHOP_ID,
                 customerName: name,
                 customerPhone: phone,
                 address: address,
-                orderDetails: itemsListSheet,
-                totalAmount: total,
+                orderDetails: itemsListSheet, 
+                totalAmount: total.toFixed(2),
                 whatsAppLink: waLink
             })
+        }).then(() => {
+            // Success அல்லது Failure ஆனாலும், WhatsApp-க்கு Redirect செய்தல்
+            window.location.href = waLink;
+        }).catch(err => {
+            window.location.href = waLink;
         });
-
-        // 2. 🚀 IMMEDIATE REDIRECT (No Waiting)
-        // window.open helps in some mobile browsers to open app directly
-        window.location.href = waLink;
     }
 
+    // Helper: பிழை செய்தியைக் காட்டுதல்
     function showError(msg) {
-        document.getElementById('menuContainer').innerHTML = `<div class="loading-screen" style="color:red;">${msg}</div>`;
+        document.getElementById('menuContainer').innerHTML = `<div class="loading-screen" style="color:red; text-align:center; font-weight:600; padding:20px;">${msg}</div>`;
+    }
+    
+    // Custom Alert மாற்று (alert() பயன்படுத்தாமல்)
+    function alert(message) {
+        const modal = document.createElement('div');
+        modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;display:flex;justify-content:center;align-items:center;';
+        const box = document.createElement('div');
+        box.style.cssText = 'background:white;padding:20px;border-radius:10px;max-width:300px;text-align:center;font-size:14px;box-shadow:0 5px 15px rgba(0,0,0,0.5);';
+        box.innerHTML = `<p>${message}</p><button onclick="this.parentNode.parentNode.remove()" style="background:var(--primary-color);color:white;border:none;padding:8px 15px;border-radius:5px;margin-top:10px;">சரி (OK)</button>`;
+        modal.appendChild(box);
+        document.body.appendChild(modal);
     }
 </script>
 
