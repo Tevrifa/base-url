@@ -1,28 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ta">
 <head>
     <meta charset="UTF-8">
     <!-- 📱 மொபைல் வடிவமைப்புக்கான மெட்டா டேக் -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Quick Order App</title>
+    <title>பிரீமியம் ஆர்டர் செயலி</title>
     
     <!-- நவீன Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <style>
+        /* --- அழகியலுக்கான CSS மேம்பாடுகள் (Aesthetic Improvements - Premium) --- */
         :root {
-            --primary-color: #00a550; /* பிரதான பச்சை நிறம் */
-            --bg-color: #f4f5f8;
+            --primary-color: #f77f00; /* பிரதான ஆழமான ஆரஞ்சு (Warm Orange) */
+            --primary-dark: #c96500;
+            --bg-color: #fcfcfc; /* மிக மென்மையான பின்னணி நிறம் */
             --white: #ffffff;
-            --text-dark: #2d3436;
-            --text-light: #636e72;
-            --shadow: 0 4px 12px rgba(0,0,0,0.08);
-            --unavailable: #b9b9b9; /* கிடைக்காத பொருட்களுக்கான நிறம் */
+            --text-dark: #1f2937; /* டார்க் கிரே */
+            --text-light: #6b7280;
+            --shadow-elevation: 0 10px 30px rgba(0,0,0,0.08); /* அதிக நிழல் ஆழம் */
+            --shadow-hover: 0 12px 35px rgba(0,0,0,0.15);
+            --unavailable: #e5e7eb; /* கிடைக்காத பொருட்களுக்கான சாம்பல் நிறம் */
+            --unavailable-text: #9ca3af;
         }
 
         * {
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent; 
         }
 
@@ -39,233 +43,213 @@
             background: var(--white);
             min-height: 100vh;
             position: relative;
-            box-shadow: 0 0 20px rgba(0,0,0,0.05);
-            padding-bottom: 100px; 
+            box-shadow: 0 0 25px rgba(0,0,0,0.15);
+            padding-bottom: 120px; /* Cart-க்கு போதுமான இடம் */
         }
 
         /* --- Header --- */
         .header {
             background: var(--white);
-            padding: 15px 20px;
+            padding: 20px;
             position: sticky;
             top: 0;
             z-index: 100;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #f0f0f0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            border-bottom: 1px solid #f3f4f6;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
         }
 
         .shop-info h1 {
-            margin: 0;
-            font-size: 18px;
+            font-size: 24px;
+            font-weight: 800; /* Extra bold */
             color: var(--text-dark);
-            font-weight: 700;
+            margin: 0;
         }
 
         .shop-info p {
-            margin: 2px 0 0;
-            font-size: 11px;
             color: var(--primary-color);
             font-weight: 600;
-            letter-spacing: 0.5px;
+            font-size: 14px;
+            margin: 0;
         }
-
-        .header-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        #languageSelector {
-            padding: 5px 8px;
+        
+        .header-controls select {
+            padding: 8px 10px;
             border-radius: 8px;
-            border: 1px solid #ddd;
-            font-size: 12px;
-            background: #f9f9f9;
-        }
-
-        .status-dot {
-            height: 10px; width: 10px;
-            background-color: #2ecc71;
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.2);
+            border: 1px solid #d1d5db;
+            font-size: 14px;
+            color: var(--text-dark);
         }
 
         /* --- Menu List --- */
         .menu-container {
-            padding: 15px;
-            animation: fadeIn 0.5s ease-in-out;
+            padding: 15px 20px;
         }
 
         .menu-card {
-            background: var(--white);
-            border-radius: 16px;
-            padding: 12px;
-            margin-bottom: 15px;
             display: flex;
             align-items: center;
-            gap: 15px;
-            box-shadow: var(--shadow);
-            border: 1px solid #f8f8f8;
-            transition: transform 0.2s;
+            background: var(--white);
+            margin-bottom: 15px;
+            padding: 15px; 
+            border-radius: 18px; /* அதிக வளைந்த மூலைகள் */
+            box-shadow: var(--shadow-elevation);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
         }
         
-        .menu-card.unavailable {
-            opacity: 0.5;
-            pointer-events: none;
-        }
-
         .menu-card:not(.unavailable):active {
             transform: scale(0.98); 
+            box-shadow: var(--shadow-hover);
+        }
+        
+        /* கிடைக்கும் பொருட்களை விட கிடைக்காத பொருட்களுக்கு கவனம் குறைவாக இருக்க வேண்டும் */
+        .menu-card.unavailable {
+            background-color: #f9f9f9;
+            opacity: 0.6;
+            pointer-events: none; 
+            box-shadow: none; /* நிழலை நீக்கு */
         }
 
         .item-image {
-            width: 75px;
-            height: 75px;
-            border-radius: 12px;
+            width: 80px; /* அளவு அதிகரிப்பு */
+            height: 80px;
             object-fit: cover;
-            background-color: #eee;
+            border-radius: 12px;
+            margin-right: 18px;
+            flex-shrink: 0;
+            /* சிறிய விளிம்பு நிழல் */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
         }
 
-        .item-details { flex: 1; }
+        .item-details {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
 
         .item-name {
-            font-size: 15px;
-            font-weight: 600;
+            font-size: 17px;
+            font-weight: 700;
             color: var(--text-dark);
             margin-bottom: 4px;
-            display: block;
         }
 
         .item-price {
-            font-size: 14px;
-            color: var(--text-light);
-            font-weight: 500;
-        }
-
-        /* --- Add Button --- */
-        .add-btn-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 70px;
-            position: relative; 
-        }
-
-        .qty-controls {
-            display: flex;
-            align-items: center;
-            background: var(--white);
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-        .qty-btn {
-            background: var(--white);
-            border: none;
-            color: var(--primary-color);
-            font-weight: 700;
-            font-size: 16px;
-            width: 25px;
-            height: 30px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--primary-dark);
         }
         
         .unavailable-tag {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
             background: var(--unavailable);
-            color: white;
-            padding: 5px 8px;
-            border-radius: 6px;
+            color: var(--unavailable-text);
             font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            position: absolute;
+            top: 5px;
+            right: 5px;
         }
 
-
+        /* --- Add Button Controls --- */
+        .add-btn-container {
+            flex-shrink: 0;
+            width: 100px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            border: 2px solid var(--primary-color); /* தடிமனான பார்டர் */
+            border-radius: 20px; /* முழுமையாக வளைந்த மூலைகள் */
+            overflow: hidden;
+            height: 40px; /* உயரம் அதிகரிப்பு */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .qty-btn {
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            width: 35px;
+            height: 100%;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            transition: background 0.15s;
+        }
+        .qty-btn:active {
+            background: var(--primary-dark);
+        }
+        
         .qty-val {
-            font-size: 13px;
-            font-weight: 600;
-            width: 20px;
+            width: 30px;
             text-align: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
         }
+
 
         /* --- Floating Bottom Cart --- */
         .floating-cart {
             position: fixed;
-            bottom: 20px;
+            bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 90%;
-            max-width: 440px;
-            background-color: var(--text-dark);
-            color: var(--white);
-            border-radius: 12px;
-            padding: 15px 20px;
-            display: none; 
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            z-index: 500;
-            cursor: pointer;
-            animation: slideUp 0.3s ease-out;
-        }
-
-        .cart-text strong { font-size: 15px; }
-        .cart-text span { font-size: 11px; opacity: 0.8; display: block; }
-        
-        .cart-arrow { font-size: 18px; font-weight: bold; color: var(--primary-color); }
-
-        /* --- Modal (Checkout) --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            z-index: 1000;
-            display: none;
-            align-items: flex-end; 
-            justify-content: center;
-            backdrop-filter: blur(3px);
-        }
-
-        .modal-sheet {
-            background: var(--white);
             width: 100%;
             max-width: 480px;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
-            padding: 25px;
-            animation: slideUpSheet 0.3s ease-out;
+            background-color: var(--primary-color); 
+            color: white;
+            padding: 20px 25px; /* Padding அதிகரிப்பு */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.2);
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            z-index: 90;
         }
-
-        .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
-
-        .input-group { margin-bottom: 15px; }
-        .input-label { font-size: 12px; color: var(--text-light); margin-bottom: 5px; display: block; }
         
-        .input-field {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 14px;
-            background: #fcfcfc;
-            outline: none;
+        .cart-text {
+            display: flex;
+            flex-direction: column;
         }
-        .input-field:focus { border-color: var(--primary-color); background: #fff; }
+        .cart-text span {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .cart-text strong {
+            font-size: 20px;
+            font-weight: 800;
+        }
+        
+        .cart-arrow {
+            background: var(--white);
+            color: var(--primary-color);
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            transition: background 0.15s;
+        }
+        .cart-arrow:active {
+            background: #f1f1f1;
+        }
 
-        .place-order-btn {
+
+        /* --- Generic Button Styles --- */
+        .btn-primary {
             width: 100%;
             padding: 15px;
             background: var(--primary-color);
@@ -273,44 +257,149 @@
             border: none;
             border-radius: 12px;
             font-size: 16px;
-            font-weight: 600;
-            margin-top: 10px;
+            font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 165, 80, 0.3);
-            transition: background 0.3s;
+            box-shadow: 0 5px 20px rgba(247, 127, 0, 0.4);
+            transition: background 0.3s, transform 0.1s;
+        }
+        .btn-primary:active {
+            transform: scale(0.99);
+            background: var(--primary-dark);
         }
 
-        .place-order-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            box-shadow: none;
+        .btn-secondary {
+            /* Google Review Button: அழகியலுக்காக மேம்படுத்தப்பட்டது */
+            width: 100%;
+            padding: 12px;
+            background: #fff0e0; /* மென்மையான ஆரஞ்சு பின்னணி */
+            color: var(--primary-dark);
+            border: 1px solid var(--primary-dark); 
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .btn-secondary:active {
+            transform: scale(0.99);
+            background: #ffe3c9; 
         }
 
-        /* --- Loading / States --- */
-        .loading-screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        /* --- Modal Overlays & Sheets --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: none;
             justify-content: center;
-            height: 60vh;
-            color: var(--text-light);
-            font-size: 14px;
+            align-items: flex-end; 
         }
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary-color);
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
+        
+        .modal-sheet {
+            background: var(--white);
+            width: 100%;
+            max-width: 480px;
+            padding: 25px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            transform: translateY(0); 
+            transition: transform 0.3s ease-out;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+        
+        .modal-overlay[style*="display: flex"] .modal-sheet {
+            animation: slideUpSheet 0.3s ease-out forwards;
+        }
+        
+        @keyframes slideUpSheet { 
+            from { transform: translateY(100%); } 
+            to { transform: translateY(0); } 
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+        }
+        
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .input-field:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(247, 127, 0, 0.2);
+            outline: none;
+        }
+
+
+        /* --- Thank You Modal Specifics --- */
+        #thankYouModal .modal-sheet {
+            text-align: center;
+            border-radius: 20px; 
+            padding: 30px;
+            align-self: center; 
+            transform: translateY(0); 
+        }
+        .thankyou-icon {
+            font-size: 60px;
+            color: var(--primary-color);
             margin-bottom: 15px;
         }
-
+        .thankyou-details {
+            font-size: 15px;
+            color: var(--text-light);
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        .review-text {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 25px;
+            font-weight: 600;
+        }
+        
+        /* Utility */
+        .loading-screen {
+            text-align: center;
+            padding-top: 50px;
+            font-size: 16px;
+            color: var(--text-light);
+        }
+        .spinner {
+            border: 4px solid rgba(0,0,0,.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: var(--primary-color);
+            animation: spin 1s ease infinite;
+            margin: 0 auto 15px;
+        }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes slideUp { from { transform: translate(-50%, 100%); opacity: 0; } to { transform: translate(-50%, -10px); opacity: 1; } }
-        @keyframes slideUpSheet { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
     </style>
 </head>
 <body>
@@ -322,16 +411,16 @@
             <h1 id="shopTitle" data-key="loading">ஏற்றுகிறது...</h1>
             <p data-key="onlineOrder">ஆன்லைன் ஆர்டர்</p>
         </div>
+        <!-- மொழி தேர்வு அப்படியே உள்ளது -->
         <div class="header-controls">
             <select id="languageSelector" onchange="setLanguage(this.value)">
                 <option value="ta">தமிழ்</option>
                 <option value="en">English</option>
                 <option value="hi">हिन्दी</option>
             </select>
-            <div class="status-dot"></div>
         </div>
     </div>
-
+    
     <!-- மெனு பகுதி -->
     <div id="menuContainer" class="menu-container">
         <div class="loading-screen">
@@ -344,18 +433,19 @@
 <!-- Cart பட்டன் (கீழே மிதக்கும்) -->
 <div class="floating-cart" id="floatingCart" onclick="openCheckout()">
     <div class="cart-text">
-        <span id="itemCount">0 Items</span>
+        <span id="itemCount">0 பொருட்கள்</span>
         <strong id="totalPrice">₹0</strong>
     </div>
     <div class="cart-arrow" data-key="continue">தொடரவும் &rarr;</div>
 </div>
 
-<!-- Checkout Modal (மறைக்கப்பட்டது) -->
+<!-- Checkout Modal -->
 <div class="modal-overlay" id="checkoutModal">
     <div class="modal-sheet">
         <div style="display:flex; justify-content:space-between; align-items:center;">
             <div class="modal-title" data-key="completeOrder">ஆர்டரை முடிக்கவும்</div>
-            <div onclick="closeCheckout()" style="font-size:24px; cursor:pointer; padding:10px;">&times;</div>
+            <!-- closeCheckout() function-ஐ பயன்படுத்துகிறோம் -->
+            <div onclick="closeCheckout()" style="font-size:30px; cursor:pointer; padding:5px; line-height:1; color: var(--text-light);">&times;</div>
         </div>
         
         <div class="input-group">
@@ -371,12 +461,30 @@
             <textarea id="cAddress" class="input-field" rows="2" data-key-placeholder="enterAddress" placeholder="அறை எண், தெருப் பெயர்"></textarea>
         </div>
 
-        <button class="place-order-btn" id="placeOrderBtn" onclick="submitOrder()" data-key="placeOrderBtn">WhatsApp வழியாக ஆர்டர் செய்யவும்</button>
+        <button class="btn-primary" id="placeOrderBtn" onclick="submitOrder()" data-key="placeOrderBtn">WhatsApp வழியாக ஆர்டர் செய்யவும்</button>
     </div>
 </div>
 
+<!-- நன்றி திரை Modal (Thank You Modal) - Google Review அம்சத்துடன் -->
+<div class="modal-overlay" id="thankYouModal">
+    <div class="modal-sheet" style="text-align: center; border-radius: 20px; padding: 30px; align-self: center;">
+        <div class="thankyou-icon">🧡</div> 
+        <div class="modal-title" data-key="thankYouTitle">ஆர்டர் சமர்ப்பிக்கப்பட்டது!</div>
+        <div class="thankyou-details" data-key="thankYouDetails">உங்கள் ஆர்டர் விவரங்கள் கடையின் WhatsApp-க்கு அனுப்ப தயாராக உள்ளது. இப்போது தொடரவும்.</div>
+        
+        <button class="btn-primary" id="waRedirectBtn" onclick="redirectTo(this.getAttribute('data-link'))" data-key="waContinue">WhatsApp-க்கு தொடரவும்</button>
+        
+        <div id="reviewSection" style="display: none;">
+            <div class="review-text" data-key="reviewRequest">உங்களுக்கு பிடித்திருந்தால், ஒரு நிமிடம் ஒதுக்கி Google-ல் மதிப்பாய்வு செய்யுங்கள்.</div>
+            <!-- Review link-க்கு புதிய function-ஐ பயன்படுத்துகிறோம் -->
+            <button class="btn-secondary" id="reviewRedirectBtn" onclick="redirectTo(this.getAttribute('data-link'), true)" data-key="reviewBtn">Google-ல் மதிப்பாய்வு செய்யவும் &nbsp; ⭐</button>
+        </div>
+    </div>
+</div>
+
+
 <script>
-    // ⚠️⚠️⚠️ Google Apps Script URL ⚠️⚠️⚠️
+    // ⚠️⚠️⚠️ Google Apps Script URL - Uṅkaḷ Google Apps Script Link-ai Iṅku Cerkkavum ⚠️⚠️⚠️
     const scriptURL = "https://script.google.com/macros/s/AKfycby4D0cHOZLeGNWgpZh1phZxvPGz1MsZtuav8KSPI_eMuPCjJgz5j_tNOpsxquqIzyBR/exec"; 
     
     // பன்மொழி அகராதி (Localization Dictionary)
@@ -389,12 +497,17 @@
             placeOrderBtn: "WhatsApp வழியாக ஆர்டர் செய்யவும்", linkError: "❌ கடை லிங்க் தவறானது. Link-ன் முடிவில் ?shopId=your_id என்று சேர்த்துள்ளீர்களா என சரிபார்க்கவும்.",
             networkError: "❌ இணைப்புப் பிழை. உங்கள் Script URL மற்றும் Deployment Access ('Anyone') ஐ சரிபார்க்கவும்.",
             inactiveShop: "⚠️ இந்த கடை சேவை தற்காலிகமாக நிறுத்தப்பட்டுள்ளது.", noItems: "பொருட்கள் எதுவும் கிடைக்கவில்லை. MenuData JSON-ஐ சரிபார்க்கவும்.",
-            unavailableTitle: "❌ தற்காலிகமாக கிடைக்காதவை", soldOut: "விற்று தீர்ந்தது", add: "சேர்க்க",
+            unavailableTitle: "❌ விற்று தீர்ந்தவை", soldOut: "விற்று தீர்ந்தது", add: "சேர்க்க",
             fillDetailsAlert: "⚠️ தயவுசெய்து பெயர், மொபைல் எண் மற்றும் முகவரி ஆகிய அனைத்து விவரங்களையும் நிரப்பவும்.",
             submittingOrder: "ஆர்டரைச் சமர்ப்பிக்கிறது...",
-            orderMessageTitle: "*💥 புதிய ஆர்டர்!* 🛵",
-            customer: "*வாடிக்கையாளர்*", mobile: "*மொபைல்*", orderDetails: "*ஆர்டர் விவரம்:*",
-            totalBill: "*மொத்த பில்*", confirmationNote: "_தயவுசெய்து ஆர்டரை உறுதிப்படுத்தவும்._"
+            orderMessageTitle: "💥 புதிய ஆர்டர்! 🛵",
+            customer: "வாடிக்கையாளர்", mobile: "மொபைல்", orderDetails: "ஆர்டர் விவரம்:",
+            totalBill: "மொத்த பில்", confirmationNote: "தயவுசெய்து ஆர்டரை உறுதிப்படுத்தவும்.",
+            thankYouTitle: "ஆர்டர் சமர்ப்பிக்கப்பட்டது!",
+            thankYouDetails: "உங்கள் ஆர்டர் விவரங்கள் கடையின் WhatsApp-க்கு அனுப்ப தயாராக உள்ளது. இப்போது தொடரவும்.",
+            waContinue: "WhatsApp-க்கு தொடரவும்",
+            reviewRequest: "உங்களுக்கு பிடித்திருந்தால், ஒரு நிமிடம் ஒதுக்கி Google-ல் மதிப்பாய்வு செய்யுங்கள்.",
+            reviewBtn: "Google-ல் மதிப்பாய்வு செய்யவும்",
         },
         en: {
             loading: "Loading...", onlineOrder: "Online Order", loadingMenu: "Loading Menu...",
@@ -404,12 +517,17 @@
             placeOrderBtn: "Place Order via WhatsApp", linkError: "❌ Shop link is invalid. Please ensure you have added ?shopId=your_id at the end of the URL.",
             networkError: "❌ Connection Error. Check your Script URL and Deployment Access ('Anyone').",
             inactiveShop: "⚠️ This shop service is temporarily paused.", noItems: "No items available. Check MenuData JSON.",
-            unavailableTitle: "❌ Temporarily Unavailable", soldOut: "SOLD OUT", add: "ADD",
+            unavailableTitle: "❌ Sold Out Items", soldOut: "SOLD OUT", add: "ADD",
             fillDetailsAlert: "⚠️ Please fill in all details: Name, Mobile Number, and Address.",
             submittingOrder: "Submitting Order...",
-            orderMessageTitle: "*💥 New Order!* 🛵",
-            customer: "*Customer*", mobile: "*Mobile*", orderDetails: "*Order Details:*",
-            totalBill: "*Total Bill*", confirmationNote: "_Please confirm the order._"
+            orderMessageTitle: "💥 New Order! 🛵",
+            customer: "Customer", mobile: "Mobile", orderDetails: "Order Details:",
+            totalBill: "Total Bill", confirmationNote: "Please confirm the order.",
+            thankYouTitle: "Order Submitted!",
+            thankYouDetails: "Your order details are ready to be sent to the shop's WhatsApp. Please continue now.",
+            waContinue: "Continue to WhatsApp",
+            reviewRequest: "If you liked our service, please take a moment to leave a review on Google.",
+            reviewBtn: "Review on Google",
         },
         hi: {
             loading: "लोड हो रहा है...", onlineOrder: "ऑनलाइन ऑर्डर", loadingMenu: "मेन्यू लोड हो रहा है...", 
@@ -419,25 +537,30 @@
             placeOrderBtn: "WhatsApp द्वारा ऑर्डर करें", linkError: "❌ दुकान लिंक अमान्य है। कृपया सुनिश्चित करें कि आपने URL के अंत में ?shopId=your_id जोड़ा है।",
             networkError: "❌ कनेक्शन त्रुटि। अपने स्क्रिप्ट URL और डिप्लॉयमेंट एक्सेस ('Anyone') की जांच करें।",
             inactiveShop: "⚠️ इस दुकान की सेवा अस्थायी रूप से बंद है।", noItems: "कोई आइटम उपलब्ध नहीं है। MenuData JSON की जांच करें।",
-            unavailableTitle: "❌ अस्थायी रूप से अनुपलब्ध", soldOut: "बिक गया", add: "जोड़ें",
+            unavailableTitle: "❌ बिके हुए आइटम", soldOut: "बिक गया", add: "जोड़ें",
             fillDetailsAlert: "⚠️ कृपया सभी विवरण भरें: नाम, मोबाइल नंबर और पता।",
             submittingOrder: "ऑर्डर सबमिट हो रहा है...",
-            orderMessageTitle: "*💥 नया ऑर्डर!* 🛵",
-            customer: "*ग्राहक*", mobile: "*मोबाइल*", orderDetails: "*ऑर्डर विवरण:*",
-            totalBill: "*कुल बिल*", confirmationNote: "_कृपया ऑर्डर की पुष्टि करें।_"
+            orderMessageTitle: "💥 नया ऑर्डर! 🛵",
+            customer: "ग्राहक", mobile: "मोबाइल", orderDetails: "ऑर्डर विवरण:",
+            totalBill: "कुल बिल", confirmationNote: "कृपया ऑर्डर की पुष्टि करें।",
+            thankYouTitle: "ऑर्डर सबमिट किया गया!",
+            thankYouDetails: "आपके ऑर्डर का विवरण दुकान के WhatsApp पर भेजने के लिए तैयार है। अब जारी रखें।",
+            waContinue: "WhatsApp पर जारी रखें",
+            reviewRequest: "अगर आपको हमारी सेवा पसंद आई, तो कृपया Google पर एक समीक्षा दें।",
+            reviewBtn: "Google पर समीक्षा करें",
         }
     };
 
-    let currentLang = 'ta'; // Default to Tamil
+    let currentLang = 'ta'; 
     let menuItems = [];
     let ownerNumber = "";
     let shopName = ""; 
+    let reviewLink = ""; 
 
-    // URL-ல் இருந்து Shop ID-ஐ எடுத்தல்
     const urlParams = new URLSearchParams(window.location.search);
     const SHOP_ID = urlParams.get('shopId');
 
-    // மொழி மாற்றத்தை நிகழ்த்தும் செயல்பாடு
+    // மொழியை மாற்றுதல்
     function translateUI() {
         const elements = document.querySelectorAll('[data-key]');
         elements.forEach(el => {
@@ -451,24 +574,34 @@
             el.placeholder = translations[currentLang][key] || el.placeholder;
         });
         
-        // Cart பட்டனை மறுபடியும் அப்டேட் செய்தல்
         updateCartDisplay();
-        
-        // மெனுவை மறுபடியும் ரெண்டர் செய்தல் (ADD/SOLD OUT பட்டன்கள் மொழியை மாற்றுவதற்காக)
-        renderMenu(); 
+        renderMenu(); // மெனுவை மீண்டும் ரெண்டர் செய்க
     }
     
-    // மொழியை செட் செய்யும் செயல்பாடு
     function setLanguage(lang) {
         currentLang = lang;
         translateUI();
         localStorage.setItem('quickOrderLang', lang);
     }
+    
+    // URL-க்கு திருப்பி அனுப்பும் பொதுவான செயல்பாடு
+    function redirectTo(url, isNewTab = false) {
+        if (isNewTab) {
+            window.open(url, '_blank');
+        } else {
+            window.location.href = url;
+        }
+        // Thank You Modal-ஐ மூடிவிடவும்
+        document.getElementById('thankYouModal').style.display = "none";
+        // Cart-ஐ மீண்டும் காலியாக்க (Reset)
+        menuItems.forEach(item => item.qty = 0);
+        updateCartDisplay();
+        renderMenu();
+    }
 
 
     // 1. ஆரம்பம் (Initialization)
     window.onload = () => {
-        // சேமிக்கப்பட்ட மொழியை ஏற்றவும்
         const savedLang = localStorage.getItem('quickOrderLang') || 'ta';
         document.getElementById('languageSelector').value = savedLang;
         setLanguage(savedLang); 
@@ -479,10 +612,10 @@
         }
         fetchShopData();
     };
-
+    
     // 2. Google Sheet-ல் இருந்து டேட்டாவை எடுத்தல்
     function fetchShopData() {
-        fetch(`${scriptURL}?shopId=${SHOP_ID}`)
+        fetch(${scriptURL}?shopId=${SHOP_ID})
         .then(response => {
              if (!response.ok) throw new Error('Network response was not ok');
              return response.json();
@@ -491,11 +624,19 @@
             if (data.status === "ACTIVE") {
                 ownerNumber = data.ownerNumber;
                 shopName = data.shopName; 
-                menuItems = data.menu.map(item => ({...item, qty: 0}));
+                reviewLink = data.reviewLink && data.reviewLink.trim() !== '' ? data.reviewLink : ''; 
+                
+                // isAvailable-ஐ boolean-ஆக உறுதி செய்க
+                menuItems = data.menu.map(item => ({
+                    ...item, 
+                    qty: 0,
+                    // கேப்பிட்டல் TRUE/YES-ஐ ஏற்றுக்கொள்கிறது
+                    isAvailable: (item.isAvailable || '').toString().toUpperCase() === 'TRUE' || (item.isAvailable || '').toString().toUpperCase() === 'YES'
+                }));
                 
                 document.getElementById('shopTitle').innerText = shopName || SHOP_ID.replace('_', ' ').toUpperCase(); 
                 
-                renderMenu();
+                renderMenu(); 
             } else if (data.status === "INACTIVE") {
                 showError(translations[currentLang].inactiveShop);
             } else {
@@ -503,30 +644,34 @@
             }
         })
         .catch(error => {
-            showError(`${translations[currentLang].networkError} <br><br> ${error.message}`);
+            showError(${translations[currentLang].networkError} <br><br> ${error.message});
         });
     }
 
-    // 3. மெனுவை திரையில் காட்டுதல்
+    // 3. மெனுவை திரையில் காட்டுதல் (Available Items மற்றும் Unavailable Items இரண்டையும் காட்டுகிறது)
     function renderMenu() {
         const container = document.getElementById('menuContainer');
         container.innerHTML = "";
         
-        const availableItems = menuItems.filter(item => item.isAvailable !== false);
-        const unavailableItems = menuItems.filter(item => item.isAvailable === false);
-
-        if(availableItems.length === 0 && unavailableItems.length === 0) {
-            container.innerHTML = `<div class='loading-screen' data-key='noItems'>${translations[currentLang].noItems}</div>`;
+        const availableItems = menuItems.filter(item => item.isAvailable).sort((a, b) => a.name.localeCompare(b.name, currentLang));
+        const unavailableItems = menuItems.filter(item => !item.isAvailable).sort((a, b) => a.name.localeCompare(b.name, currentLang));
+        
+        if (availableItems.length === 0 && unavailableItems.length === 0) {
+            container.innerHTML = <div class='loading-screen' data-key='noItems'>${translations[currentLang].noItems}</div>;
             return;
         }
         
-        availableItems.forEach(item => {
-            container.appendChild(createMenuItemCard(item, false)); 
-        });
+        // 1. Available Items-ஐ ரெண்டர் செய்க
+        if (availableItems.length > 0) {
+            availableItems.forEach(item => {
+                container.appendChild(createMenuItemCard(item, false)); 
+            });
+        }
         
+        // 2. Unavailable Items-ஐ ரெண்டர் செய்க
         if (unavailableItems.length > 0) {
              const title = document.createElement('h2');
-             title.style.cssText = 'font-size: 16px; font-weight: 600; color: var(--unavailable); margin-top: 20px;';
+             title.style.cssText = 'font-size: 16px; font-weight: 700; color: var(--unavailable-text); margin-top: 25px; padding: 10px 0; border-top: 1px dashed #d1d5db;';
              title.innerText = translations[currentLang].unavailableTitle;
              container.appendChild(title);
              
@@ -543,13 +688,13 @@
             card.classList.add('unavailable');
         }
 
-        const currentQty = menuItems.find(i => i.id === item.id).qty;
+        const currentQty = menuItems.find(i => i.id === item.id)?.qty || 0; 
 
         let controlsHTML;
         if (isUnavailable) {
-            controlsHTML = `<div class="unavailable-tag">${translations[currentLang].soldOut}</div>`;
+            controlsHTML = <div class="unavailable-tag">${translations[currentLang].soldOut}</div>;
         } else if (currentQty === 0) {
-            controlsHTML = `<button class="qty-btn" style="width:60px; color:green; border:1px solid #ddd; border-radius:5px; font-size:12px; font-weight:600;" onclick="updateQty(${item.id}, 1)">${translations[currentLang].add}</button>`;
+            controlsHTML = <button class="btn-primary" style="width:60px; height:35px; padding:0; font-size:14px; font-weight:700; box-shadow:none; border-radius:10px;" onclick="updateQty(${item.id}, 1)">${translations[currentLang].add}</button>;
         } else {
             controlsHTML = `
                 <div class="qty-controls">
@@ -559,11 +704,10 @@
                 </div>`;
         }
 
-        // Image Fallback using onerror
-        const imageUrl = item.imageUrl || `https://placehold.co/80x80/9e9e9e/ffffff?text=${item.name.substring(0,2)}`;
+        const imageUrl = item.imageUrl || https://placehold.co/80x80/${isUnavailable ? 'e5e7eb' : 'f77f00'}/ffffff?text=${item.name.substring(0,2)};
 
         card.innerHTML = `
-            <img src="${imageUrl}" class="item-image" onerror="this.onerror=null;this.src='https://placehold.co/80x80/9e9e9e/ffffff?text=Food'">
+            <img src="${imageUrl}" class="item-image" onerror="this.onerror=null;this.src='https://placehold.co/80x80/${isUnavailable ? 'e5e7eb' : 'f77f00'}/ffffff?text=Food'">
             <div class="item-details">
                 <span class="item-name">${item.name}</span>
                 <span class="item-price">₹${item.price}</span>
@@ -582,7 +726,7 @@
         if (item) {
             if (item.qty + change >= 0) {
                 item.qty += change;
-                renderMenu(); 
+                renderMenu(); // முழு மெனுவையும் மீண்டும் ரெண்டர் செய்க
                 updateCartDisplay();
             }
         }
@@ -592,25 +736,28 @@
     function updateCartDisplay() {
         const cartItems = menuItems.filter(i => i.qty > 0);
         const total = cartItems.reduce((sum, i) => sum + (i.price * i.qty), 0);
-        // FIXED: The syntax for the reduce function was corrected to calculate the total count.
-        const count = cartItems.reduce((sum, i) => sum + i.qty, 0); 
+        const count = cartItems.reduce((acc, i) => acc + i.qty, 0); 
         const langText = translations[currentLang].items;
 
         const cartBar = document.getElementById('floatingCart');
         if (count > 0) {
             cartBar.style.display = "flex";
-            document.getElementById('itemCount').innerText = `${count} ${langText}`;
-            document.getElementById('totalPrice').innerText = `₹${total}`;
+            document.getElementById('itemCount').innerText = ${count} ${langText};
+            document.getElementById('totalPrice').innerText = ₹${total};
         } else {
             cartBar.style.display = "none";
         }
         
-        // Cart பட்டனில் உள்ள தொடரவும் (Continue) மொழியையும் அப்டேட் செய்யவும்
         document.querySelector('.cart-arrow').innerText = translations[currentLang].continue + ' →';
     }
 
     // 6. Checkout Modal திறத்தல் / மூடுதல்
     function openCheckout() {
+        const cartItems = menuItems.filter(i => i.qty > 0);
+        if (cartItems.length === 0) {
+            customAlert("தயவுசெய்து ஆர்டர் செய்ய வேண்டிய பொருட்களை சேர்க்கவும்.");
+            return;
+        }
         document.getElementById('checkoutModal').style.display = "flex";
     }
     function closeCheckout() {
@@ -628,21 +775,21 @@
             return;
         }
 
+        closeCheckout(); 
+
         const cartItems = menuItems.filter(i => i.qty > 0);
         const total = cartItems.reduce((sum, i) => sum + (i.price * i.qty), 0);
         
-        // WhatsApp Message தயார் செய்தல்
-        let itemsListWA = cartItems.map(i => `* ${i.name} x ${i.qty}`).join("%0A");
-        let itemsListSheet = cartItems.map(i => `${i.name} (${i.qty}) - ₹${i.price * i.qty}`).join(" | ");
+        let itemsListWA = cartItems.map(i => * ${i.name} x ${i.qty} (₹${i.price * i.qty})).join("%0A");
+        let itemsListSheet = cartItems.map(i => ${i.name} (${i.qty}) - ₹${i.price * i.qty}).join(" | ");
 
         const t = translations[currentLang];
 
-        // Order Message
-        const msg = `${t.orderMessageTitle}%0A%0A*கடை:* ${shopName || SHOP_ID.toUpperCase()}%0A${t.customer}: ${name}%0A${t.mobile}: ${phone}%0A*முகவரி:* ${address}%0A%0A${t.orderDetails}%0A${itemsListWA}%0A%0A${t.totalBill}: ₹${total}*%0A%0A${t.confirmationNote}`;
+        const msg = ${t.orderMessageTitle}%0A%0A*கடை:* ${shopName || SHOP_ID.toUpperCase()}%0A${t.customer}: ${name}%0A${t.mobile}: ${phone}%0A*முகவரி:* ${address}%0A%0A${t.orderDetails}%0A${itemsListWA}%0A%0A${t.totalBill}: *₹${total}*%0A%0A${t.confirmationNote};
         
-        const waLink = `https://wa.me/${ownerNumber}?text=${msg}`;
+        const waLink = https://wa.me/${ownerNumber}?text=${msg};
 
-        // UI Feedback
+        // UI Feedback: ஆர்டர் சமர்ப்பிக்கப்படுகிறது என்று காட்ட
         const btn = document.getElementById('placeOrderBtn');
         btn.innerText = translations[currentLang].submittingOrder;
         btn.disabled = true;
@@ -662,16 +809,44 @@
                 whatsAppLink: waLink
             })
         }).then(() => {
-            // Success அல்லது Failure ஆனாலும், WhatsApp-க்கு Redirect செய்தல்
-            window.location.href = waLink;
+            // Success ஆனாலும், Thank You Modal-ஐ திற
+            showThankYou(waLink);
         }).catch(err => {
-            window.location.href = waLink;
+            // Error ஆனாலும், Thank You Modal-ஐ திற (WhatsApp link முக்கியம் என்பதால்)
+            showThankYou(waLink);
         });
     }
 
-    // Helper: பிழை செய்தியைக் காட்டுதல்
+    // 8. Thank You Modal-ஐக் காட்டும் செயல்பாடு
+    function showThankYou(waLink) {
+        document.getElementById('thankYouModal').style.display = "flex";
+        
+        // WhatsApp link-ஐ பட்டனில் இணைக்க
+        document.getElementById('waRedirectBtn').setAttribute('data-link', waLink);
+
+        // Google Review link-ஐ இணைக்க (Link இருந்தால் மட்டுமே காட்டப்படும்)
+        const reviewSection = document.getElementById('reviewSection');
+        if (reviewLink) {
+            reviewSection.style.display = 'block';
+            document.getElementById('reviewRedirectBtn').setAttribute('data-link', reviewLink);
+        } else {
+            reviewSection.style.display = 'none';
+        }
+        
+        // Place Order பட்டனை மீண்டும் சரிசெய்யவும் (ரிசெட்)
+        document.getElementById('placeOrderBtn').innerText = translations[currentLang].placeOrderBtn;
+        document.getElementById('placeOrderBtn').disabled = false;
+        
+        // Input fields-ஐ காலியாக்க
+        document.getElementById('cName').value = '';
+        document.getElementById('cPhone').value = '';
+        document.getElementById('cAddress').value = '';
+    }
+
+
+    // Helper: பிழை அல்லது எச்சரிக்கை செய்தியைக் காட்டுதல்
     function showError(msg) {
-        document.getElementById('menuContainer').innerHTML = `<div class="loading-screen" style="color:red; text-align:center; font-weight:600; padding:20px;">${msg}</div>`;
+        document.getElementById('menuContainer').innerHTML = <div class="loading-screen" style="color:red; text-align:center; font-weight:700; padding:20px;">${msg}</div>;
     }
     
     // Custom Alert மாற்று (alert() பயன்படுத்தாமல்)
@@ -679,13 +854,9 @@
         const modal = document.createElement('div');
         modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;display:flex;justify-content:center;align-items:center;';
         const box = document.createElement('div');
-        box.style.cssText = 'background:white;padding:20px;border-radius:10px;max-width:300px;text-align:center;font-size:14px;box-shadow:0 5px 15px rgba(0,0,0,0.5);';
-        box.innerHTML = `<p>${message}</p><button onclick="this.parentNode.parentNode.remove()" style="background:var(--primary-color);color:white;border:none;padding:8px 15px;border-radius:5px;margin-top:10px;">சரி (OK)</button>`;
+        box.style.cssText = 'background:white;padding:20px;border-radius:10px;max-width:300px;text-align:center;font-size:14px;box-shadow:0 5px 15px rgba(0,0,0,0.5); transform: translateY(0);';
+        box.innerHTML = <p>${message}</p><button onclick="this.parentNode.parentNode.remove()" class="btn-primary" style="margin-top:15px; padding:10px 15px; width:auto;">சரி (OK)</button>;
         modal.appendChild(box);
         document.body.appendChild(modal);
     }
 </script>
-
-</body>
-</html>
-
