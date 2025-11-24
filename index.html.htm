@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="ta">
 <head>
     <meta charset="UTF-8">
@@ -219,6 +219,10 @@
             border-top-left-radius: 25px;
             border-top-right-radius: 25px;
             z-index: 90;
+            transition: transform 0.3s ease-out;
+        }
+        .floating-cart.hidden {
+            transform: translateX(-50%) translateY(100%);
         }
         
         .cart-text {
@@ -266,6 +270,11 @@
             transform: scale(0.99);
             background: var(--primary-dark);
         }
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
 
         .btn-secondary {
             /* Google Review Button: அழகியலுக்காக மேம்படுத்தப்பட்டது */
@@ -298,6 +307,7 @@
             display: none;
             justify-content: center;
             align-items: flex-end; 
+            overflow: hidden; /* அனிமேஷனுக்கு */
         }
         
         .modal-sheet {
@@ -307,22 +317,20 @@
             padding: 25px;
             border-top-left-radius: 20px;
             border-top-right-radius: 20px;
-            transform: translateY(0); 
-            transition: transform 0.3s ease-out;
-            max-height: 80vh;
+            transform: translateY(100%); /* ஆரம்ப நிலை: மறைக்கப்பட்டது */
+            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* மென்மையான அனிமேஷன் */
+            max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 0 20px rgba(0,0,0,0.3);
         }
         
-        .modal-overlay[style*="display: flex"] .modal-sheet {
-            animation: slideUpSheet 0.3s ease-out forwards;
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-overlay.active .modal-sheet {
+            transform: translateY(0);
         }
         
-        @keyframes slideUpSheet { 
-            from { transform: translateY(100%); } 
-            to { transform: translateY(0); } 
-        }
-
         .modal-title {
             font-size: 22px;
             font-weight: 800;
@@ -363,7 +371,8 @@
             border-radius: 20px; 
             padding: 30px;
             align-self: center; 
-            transform: translateY(0); 
+            /* இது மையத்தில் இருக்க கீழ்நோக்கி வர வேண்டும் */
+            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
         }
         .thankyou-icon {
             font-size: 60px;
@@ -431,7 +440,7 @@
 </div>
 
 <!-- Cart பட்டன் (கீழே மிதக்கும்) -->
-<div class="floating-cart" id="floatingCart" onclick="openCheckout()">
+<div class="floating-cart hidden" id="floatingCart" onclick="openCheckout()">
     <div class="cart-text">
         <span id="itemCount">0 பொருட்கள்</span>
         <strong id="totalPrice">₹0</strong>
@@ -467,7 +476,7 @@
 
 <!-- நன்றி திரை Modal (Thank You Modal) - Google Review அம்சத்துடன் -->
 <div class="modal-overlay" id="thankYouModal">
-    <div class="modal-sheet" style="text-align: center; border-radius: 20px; padding: 30px; align-self: center;">
+    <div class="modal-sheet" style="text-align: center; border-radius: 20px; padding: 30px; align-self: center; max-width: 350px;">
         <div class="thankyou-icon">🧡</div> 
         <div class="modal-title" data-key="thankYouTitle">ஆர்டர் சமர்ப்பிக்கப்பட்டது!</div>
         <div class="thankyou-details" data-key="thankYouDetails">உங்கள் ஆர்டர் விவரங்கள் கடையின் WhatsApp-க்கு அனுப்ப தயாராக உள்ளது. இப்போது தொடரவும்.</div>
@@ -479,6 +488,15 @@
             <!-- Review link-க்கு புதிய function-ஐ பயன்படுத்துகிறோம் -->
             <button class="btn-secondary" id="reviewRedirectBtn" onclick="redirectTo(this.getAttribute('data-link'), true)" data-key="reviewBtn">Google-ல் மதிப்பாய்வு செய்யவும் &nbsp; ⭐</button>
         </div>
+    </div>
+</div>
+
+<!-- Custom Alert Modal (பிழை அல்லது தகவல் அறிவிப்புக்கு) -->
+<div class="modal-overlay" id="customAlertModal" onclick="closeCustomAlert(event)">
+    <div class="modal-sheet" style="text-align: center; border-radius: 20px; padding: 25px; align-self: center; max-width: 350px;">
+        <div class="modal-title" id="customAlertTitle" style="margin-bottom: 10px;">பிழை</div>
+        <div class="thankyou-details" id="customAlertMessage" style="margin-bottom: 0;"></div>
+        <button class="btn-primary" onclick="closeCustomAlert()" style="margin-top: 20px;">சரி</button>
     </div>
 </div>
 
@@ -497,17 +515,18 @@
             placeOrderBtn: "WhatsApp வழியாக ஆர்டர் செய்யவும்", linkError: "❌ கடை லிங்க் தவறானது. Link-ன் முடிவில் ?shopId=your_id என்று சேர்த்துள்ளீர்களா என சரிபார்க்கவும்.",
             networkError: "❌ இணைப்புப் பிழை. உங்கள் Script URL மற்றும் Deployment Access ('Anyone') ஐ சரிபார்க்கவும்.",
             inactiveShop: "⚠️ இந்த கடை சேவை தற்காலிகமாக நிறுத்தப்பட்டுள்ளது.", noItems: "பொருட்கள் எதுவும் கிடைக்கவில்லை. MenuData JSON-ஐ சரிபார்க்கவும்.",
-            unavailableTitle: "❌ விற்று தீர்ந்தவை", soldOut: "விற்று தீர்ந்தது", add: "சேர்க்க",
+            unavailableTitle: "❌ பிழை", soldOut: "விற்று தீர்ந்தது", add: "சேர்க்க",
             fillDetailsAlert: "⚠️ தயவுசெய்து பெயர், மொபைல் எண் மற்றும் முகவரி ஆகிய அனைத்து விவரங்களையும் நிரப்பவும்.",
             submittingOrder: "ஆர்டரைச் சமர்ப்பிக்கிறது...",
-            orderMessageTitle: "*💥 புதிய ஆர்டர்!* 🛵",
-            customer: "*வாடிக்கையாளர்*", mobile: "*மொபைல்*", orderDetails: "*ஆர்டர் விவரம்:*",
-            totalBill: "*மொத்த பில்*", confirmationNote: "_தயவுசெய்து ஆர்டரை உறுதிப்படுத்தவும்._",
+            orderMessageTitle: "💥 புதிய ஆர்டர்! 🛵",
+            customer: "வாடிக்கையாளர்", mobile: "மொபைல்", orderDetails: "ஆர்டர் விவரம்:",
+            totalBill: "மொத்த பில்", confirmationNote: "தயவுசெய்து ஆர்டரை உறுதிப்படுத்தவும்.",
             thankYouTitle: "ஆர்டர் சமர்ப்பிக்கப்பட்டது!",
             thankYouDetails: "உங்கள் ஆர்டர் விவரங்கள் கடையின் WhatsApp-க்கு அனுப்ப தயாராக உள்ளது. இப்போது தொடரவும்.",
             waContinue: "WhatsApp-க்கு தொடரவும்",
             reviewRequest: "உங்களுக்கு பிடித்திருந்தால், ஒரு நிமிடம் ஒதுக்கி Google-ல் மதிப்பாய்வு செய்யுங்கள்.",
             reviewBtn: "Google-ல் மதிப்பாய்வு செய்யவும்",
+            alertTitle: "அறிவிப்பு" // Custom Alert-க்கு சேர்க்கப்பட்டது
         },
         en: {
             loading: "Loading...", onlineOrder: "Online Order", loadingMenu: "Loading Menu...",
@@ -517,17 +536,18 @@
             placeOrderBtn: "Place Order via WhatsApp", linkError: "❌ Shop link is invalid. Please ensure you have added ?shopId=your_id at the end of the URL.",
             networkError: "❌ Connection Error. Check your Script URL and Deployment Access ('Anyone').",
             inactiveShop: "⚠️ This shop service is temporarily paused.", noItems: "No items available. Check MenuData JSON.",
-            unavailableTitle: "❌ Sold Out Items", soldOut: "SOLD OUT", add: "ADD",
+            unavailableTitle: "❌ Error", soldOut: "SOLD OUT", add: "ADD",
             fillDetailsAlert: "⚠️ Please fill in all details: Name, Mobile Number, and Address.",
             submittingOrder: "Submitting Order...",
-            orderMessageTitle: "*💥 New Order!* 🛵",
-            customer: "*Customer*", mobile: "*Mobile*", orderDetails: "*Order Details:*",
-            totalBill: "*Total Bill*", confirmationNote: "_Please confirm the order._",
+            orderMessageTitle: "💥 New Order! 🛵",
+            customer: "Customer", mobile: "Mobile", orderDetails: "Order Details:",
+            totalBill: "Total Bill", confirmationNote: "Please confirm the order.",
             thankYouTitle: "Order Submitted!",
             thankYouDetails: "Your order details are ready to be sent to the shop's WhatsApp. Please continue now.",
             waContinue: "Continue to WhatsApp",
             reviewRequest: "If you liked our service, please take a moment to leave a review on Google.",
             reviewBtn: "Review on Google",
+            alertTitle: "Notification" // Custom Alert-க்கு சேர்க்கப்பட்டது
         },
         hi: {
             loading: "लोड हो रहा है...", onlineOrder: "ऑनलाइन ऑर्डर", loadingMenu: "मेन्यू लोड हो रहा है...", 
@@ -537,17 +557,18 @@
             placeOrderBtn: "WhatsApp द्वारा ऑर्डर करें", linkError: "❌ दुकान लिंक अमान्य है। कृपया सुनिश्चित करें कि आपने URL के अंत में ?shopId=your_id जोड़ा है।",
             networkError: "❌ कनेक्शन त्रुटि। अपने स्क्रिप्ट URL और डिप्लॉयमेंट एक्सेस ('Anyone') की जांच करें।",
             inactiveShop: "⚠️ इस दुकान की सेवा अस्थायी रूप से बंद है।", noItems: "कोई आइटम उपलब्ध नहीं है। MenuData JSON की जांच करें।",
-            unavailableTitle: "❌ बिके हुए आइटम", soldOut: "बिक गया", add: "जोड़ें",
+            unavailableTitle: "❌ त्रुटि", soldOut: "बिक गया", add: "जोड़ें",
             fillDetailsAlert: "⚠️ कृपया सभी विवरण भरें: नाम, मोबाइल नंबर और पता।",
             submittingOrder: "ऑर्डर सबमिट हो रहा है...",
-            orderMessageTitle: "*💥 नया ऑर्डर!* 🛵",
-            customer: "*ग्राहक*", mobile: "*मोबाइल*", orderDetails: "*ऑर्डर विवरण:*",
-            totalBill: "*कुल बिल*", confirmationNote: "_कृपया ऑर्डर की पुष्टि करें।_",
+            orderMessageTitle: "💥 नया ऑर्डर! 🛵",
+            customer: "ग्राहक", mobile: "मोबाइल", orderDetails: "ऑर्डर विवरण:",
+            totalBill: "कुल बिल", confirmationNote: "कृपया ऑर्डर की पुष्टि करें।",
             thankYouTitle: "ऑर्डर सबमिट किया गया!",
             thankYouDetails: "आपके ऑर्डर का विवरण दुकान के WhatsApp पर भेजने के लिए तैयार है। अब जारी रखें।",
             waContinue: "WhatsApp पर जारी रखें",
             reviewRequest: "अगर आपको हमारी सेवा पसंद आई, तो कृपया Google पर एक समीक्षा दें।",
             reviewBtn: "Google पर समीक्षा करें",
+            alertTitle: "सूचना" // Custom Alert-க்கு சேர்க்கப்பட்டது
         }
     };
 
@@ -559,6 +580,35 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const SHOP_ID = urlParams.get('shopId');
+
+    // --- Modal Functions (Custom Alert) ---
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('active');
+    }
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+    }
+
+    function customAlert(message) {
+        document.getElementById('customAlertMessage').innerHTML = message;
+        document.getElementById('customAlertTitle').innerText = translations[currentLang].alertTitle;
+        openModal('customAlertModal');
+    }
+    
+    // Overlay கிளிக் செய்யும் போது மூட அனுமதிக்க
+    function closeCustomAlert(event) {
+        const modal = document.getElementById('customAlertModal');
+        if (event && event.target !== modal) return;
+        closeModal('customAlertModal');
+    }
+
+    function showError(message) {
+        // Use customAlert for showing errors like network issues
+        customAlert(message);
+        document.getElementById('menuContainer').innerHTML = `<div class='loading-screen' style='color: #dc2626; font-weight: 600;'>${message}</div>`;
+        document.getElementById('floatingCart').classList.add('hidden');
+    }
+
 
     // மொழியை மாற்றுதல்
     function translateUI() {
@@ -586,13 +636,14 @@
     
     // URL-க்கு திருப்பி அனுப்பும் பொதுவான செயல்பாடு
     function redirectTo(url, isNewTab = false) {
+        if (!url) return;
         if (isNewTab) {
             window.open(url, '_blank');
         } else {
             window.location.href = url;
         }
         // Thank You Modal-ஐ மூடிவிடவும்
-        document.getElementById('thankYouModal').style.display = "none";
+        closeModal('thankYouModal');
         // Cart-ஐ மீண்டும் காலியாக்க (Reset)
         menuItems.forEach(item => item.qty = 0);
         updateCartDisplay();
@@ -676,7 +727,7 @@
              container.appendChild(title);
              
              unavailableItems.forEach(item => {
-                container.appendChild(createMenuItemCard(item, true)); 
+                 container.appendChild(createMenuItemCard(item, true)); 
              });
         }
     }
@@ -688,22 +739,23 @@
             card.classList.add('unavailable');
         }
 
-        const currentQty = menuItems.find(i => i.id === item.id)?.qty || 0; 
+        // item.id ஐப் பயன்படுத்தி சரியான qty-ஐப் பெறுக
+        const currentItemInState = menuItems.find(i => i.id === item.id);
+        const currentQty = currentItemInState ? currentItemInState.qty : 0; 
 
         let controlsHTML;
         if (isUnavailable) {
             controlsHTML = `<div class="unavailable-tag">${translations[currentLang].soldOut}</div>`;
         } else if (currentQty === 0) {
-            // ⭐ பிழை திருத்தம் இங்கே: item.id-ஐ ஒற்றை மேற்கோள் குறியுடன் அனுப்புகிறோம் ('...')
-            controlsHTML = `<button class="btn-primary" style="width:60px; height:35px; padding:0; font-size:14px; font-weight:700; box-shadow:none; border-radius:10px;" onclick="updateQty('${item.id}', 1)">${translations[currentLang].add}</button>`;
+            // quantity 0 ஆக இருந்தால், 'Add' பட்டனைக் காட்டவும்.
+            controlsHTML = `<button class="btn-primary" style="width:60px; height:35px; padding:0; font-size:14px; font-weight:700; box-shadow:none; border-radius:10px;" onclick="updateQty(${item.id}, 1)">${translations[currentLang].add}</button>`;
         } else {
+            // quantity > 0 ஆக இருந்தால், + / - கட்டுப்பாட்டைக் காட்டவும்.
             controlsHTML = `
                 <div class="qty-controls">
-                    <!-- ⭐ பிழை திருத்தம் இங்கே: item.id-ஐ ஒற்றை மேற்கோள் குறியுடன் அனுப்புகிறோம் ('...') -->
-                    <button class="qty-btn" onclick="updateQty('${item.id}', -1)">-</button>
+                    <button class="qty-btn" onclick="updateQty(${item.id}, -1)">-</button>
                     <div class="qty-val" id="qty-${item.id}">${currentQty}</div>
-                    <!-- ⭐ பிழை திருத்தம் இங்கே: item.id-ஐ ஒற்றை மேற்கோள் குறியுடன் அனுப்புகிறோம் ('...') -->
-                    <button class="qty-btn" onclick="updateQty('${item.id}', 1)">+</button>
+                    <button class="qty-btn" onclick="updateQty(${item.id}, 1)">+</button>
                 </div>`;
         }
 
@@ -744,11 +796,11 @@
 
         const cartBar = document.getElementById('floatingCart');
         if (count > 0) {
-            cartBar.style.display = "flex";
+            cartBar.classList.remove('hidden');
             document.getElementById('itemCount').innerText = `${count} ${langText}`;
             document.getElementById('totalPrice').innerText = `₹${total}`;
         } else {
-            cartBar.style.display = "none";
+            cartBar.classList.add('hidden');
         }
         
         document.querySelector('.cart-arrow').innerText = translations[currentLang].continue + ' →';
@@ -761,10 +813,10 @@
             customAlert("தயவுசெய்து ஆர்டர் செய்ய வேண்டிய பொருட்களை சேர்க்கவும்.");
             return;
         }
-        document.getElementById('checkoutModal').style.display = "flex";
+        openModal('checkoutModal');
     }
     function closeCheckout() {
-        document.getElementById('checkoutModal').style.display = "none";
+        closeModal('checkoutModal');
     }
 
     // 7. ஆர்டர் சமர்ப்பித்தல்
@@ -822,48 +874,27 @@
 
     // 8. Thank You Modal-ஐக் காட்டும் செயல்பாடு
     function showThankYou(waLink) {
-        document.getElementById('thankYouModal').style.display = "flex";
-        
-        // WhatsApp link-ஐ பட்டனில் இணைக்க
+        openModal('thankYouModal');
+
+        // WA redirect link-ஐ அமைக்கவும்
         document.getElementById('waRedirectBtn').setAttribute('data-link', waLink);
 
-        // Google Review link-ஐ இணைக்க (Link இருந்தால் மட்டுமே காட்டப்படும்)
+        // பட்டனை மீண்டும் அதன் பழைய நிலைக்கு கொண்டு வரவும்
+        const btn = document.getElementById('placeOrderBtn');
+        btn.innerText = translations[currentLang].placeOrderBtn;
+        btn.disabled = false;
+
+        // Review Link-ஐ கையாளவும்
         const reviewSection = document.getElementById('reviewSection');
-        if (reviewLink) {
+        if (reviewLink && reviewLink.trim() !== '') {
             reviewSection.style.display = 'block';
             document.getElementById('reviewRedirectBtn').setAttribute('data-link', reviewLink);
         } else {
             reviewSection.style.display = 'none';
         }
-        
-        // Place Order பட்டனை மீண்டும் சரிசெய்யவும் (ரிசெட்)
-        document.getElementById('placeOrderBtn').innerText = translations[currentLang].placeOrderBtn;
-        document.getElementById('placeOrderBtn').disabled = false;
-        
-        // Input fields-ஐ காலியாக்க
-        document.getElementById('cName').value = '';
-        document.getElementById('cPhone').value = '';
-        document.getElementById('cAddress').value = '';
-    }
-
-
-    // Helper: பிழை அல்லது எச்சரிக்கை செய்தியைக் காட்டுதல்
-    function showError(msg) {
-        document.getElementById('menuContainer').innerHTML = `<div class="loading-screen" style="color:red; text-align:center; font-weight:700; padding:20px;">${msg}</div>`;
-    }
-    
-    // Custom Alert மாற்று (alert() பயன்படுத்தாமல்)
-    function customAlert(message) {
-        const modal = document.createElement('div');
-        modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;display:flex;justify-content:center;align-items:center;';
-        const box = document.createElement('div');
-        box.style.cssText = 'background:white;padding:20px;border-radius:10px;max-width:300px;text-align:center;font-size:14px;box-shadow:0 5px 15px rgba(0,0,0,0.5); transform: translateY(0);';
-        box.innerHTML = `<p>${message}</p><button onclick="this.parentNode.parentNode.remove()" class="btn-primary" style="margin-top:15px; padding:10px 15px; width:auto;">சரி (OK)</button>`;
-        modal.appendChild(box);
-        document.body.appendChild(modal);
     }
 </script>
-
 </body>
 </html>
+
 
