@@ -500,9 +500,9 @@
             unavailableTitle: "❌ விற்று தீர்ந்தவை", soldOut: "விற்று தீர்ந்தது", add: "சேர்க்க",
             fillDetailsAlert: "⚠️ தயவுசெய்து பெயர், மொபைல் எண் மற்றும் முகவரி ஆகிய அனைத்து விவரங்களையும் நிரப்பவும்.",
             submittingOrder: "ஆர்டரைச் சமர்ப்பிக்கிறது...",
-            orderMessageTitle: "💥 புதிய ஆர்டர்! 🛵",
-            customer: "வாடிக்கையாளர்", mobile: "மொபைல்", orderDetails: "ஆர்டர் விவரம்:",
-            totalBill: "மொத்த பில்", confirmationNote: "தயவுசெய்து ஆர்டரை உறுதிப்படுத்தவும்.",
+            orderMessageTitle: "*💥 புதிய ஆர்டர்!* 🛵",
+            customer: "*வாடிக்கையாளர்*", mobile: "*மொபைல்*", orderDetails: "*ஆர்டர் விவரம்:*",
+            totalBill: "*மொத்த பில்*", confirmationNote: "_தயவுசெய்து ஆர்டரை உறுதிப்படுத்தவும்._",
             thankYouTitle: "ஆர்டர் சமர்ப்பிக்கப்பட்டது!",
             thankYouDetails: "உங்கள் ஆர்டர் விவரங்கள் கடையின் WhatsApp-க்கு அனுப்ப தயாராக உள்ளது. இப்போது தொடரவும்.",
             waContinue: "WhatsApp-க்கு தொடரவும்",
@@ -520,9 +520,9 @@
             unavailableTitle: "❌ Sold Out Items", soldOut: "SOLD OUT", add: "ADD",
             fillDetailsAlert: "⚠️ Please fill in all details: Name, Mobile Number, and Address.",
             submittingOrder: "Submitting Order...",
-            orderMessageTitle: "💥 New Order! 🛵",
-            customer: "Customer", mobile: "Mobile", orderDetails: "Order Details:",
-            totalBill: "Total Bill", confirmationNote: "Please confirm the order.",
+            orderMessageTitle: "*💥 New Order!* 🛵",
+            customer: "*Customer*", mobile: "*Mobile*", orderDetails: "*Order Details:*",
+            totalBill: "*Total Bill*", confirmationNote: "_Please confirm the order._",
             thankYouTitle: "Order Submitted!",
             thankYouDetails: "Your order details are ready to be sent to the shop's WhatsApp. Please continue now.",
             waContinue: "Continue to WhatsApp",
@@ -540,9 +540,9 @@
             unavailableTitle: "❌ बिके हुए आइटम", soldOut: "बिक गया", add: "जोड़ें",
             fillDetailsAlert: "⚠️ कृपया सभी विवरण भरें: नाम, मोबाइल नंबर और पता।",
             submittingOrder: "ऑर्डर सबमिट हो रहा है...",
-            orderMessageTitle: "💥 नया ऑर्डर! 🛵",
-            customer: "ग्राहक", mobile: "मोबाइल", orderDetails: "ऑर्डर विवरण:",
-            totalBill: "कुल बिल", confirmationNote: "कृपया ऑर्डर की पुष्टि करें।",
+            orderMessageTitle: "*💥 नया ऑर्डर!* 🛵",
+            customer: "*ग्राहक*", mobile: "*मोबाइल*", orderDetails: "*ऑर्डर विवरण:*",
+            totalBill: "*कुल बिल*", confirmationNote: "_कृपया ऑर्डर की पुष्टि करें।_",
             thankYouTitle: "ऑर्डर सबमिट किया गया!",
             thankYouDetails: "आपके ऑर्डर का विवरण दुकान के WhatsApp पर भेजने के लिए तैयार है। अब जारी रखें।",
             waContinue: "WhatsApp पर जारी रखें",
@@ -615,7 +615,7 @@
     
     // 2. Google Sheet-ல் இருந்து டேட்டாவை எடுத்தல்
     function fetchShopData() {
-        fetch(${scriptURL}?shopId=${SHOP_ID})
+        fetch(`${scriptURL}?shopId=${SHOP_ID}`)
         .then(response => {
              if (!response.ok) throw new Error('Network response was not ok');
              return response.json();
@@ -644,7 +644,7 @@
             }
         })
         .catch(error => {
-            showError(${translations[currentLang].networkError} <br><br> ${error.message});
+            showError(`${translations[currentLang].networkError} <br><br> ${error.message}`);
         });
     }
 
@@ -657,7 +657,7 @@
         const unavailableItems = menuItems.filter(item => !item.isAvailable).sort((a, b) => a.name.localeCompare(b.name, currentLang));
         
         if (availableItems.length === 0 && unavailableItems.length === 0) {
-            container.innerHTML = <div class='loading-screen' data-key='noItems'>${translations[currentLang].noItems}</div>;
+            container.innerHTML = `<div class='loading-screen' data-key='noItems'>${translations[currentLang].noItems}</div>`;
             return;
         }
         
@@ -692,19 +692,22 @@
 
         let controlsHTML;
         if (isUnavailable) {
-            controlsHTML = <div class="unavailable-tag">${translations[currentLang].soldOut}</div>;
+            controlsHTML = `<div class="unavailable-tag">${translations[currentLang].soldOut}</div>`;
         } else if (currentQty === 0) {
-            controlsHTML = <button class="btn-primary" style="width:60px; height:35px; padding:0; font-size:14px; font-weight:700; box-shadow:none; border-radius:10px;" onclick="updateQty(${item.id}, 1)">${translations[currentLang].add}</button>;
+            // ⭐ பிழை திருத்தம் இங்கே: item.id-ஐ ஒற்றை மேற்கோள் குறியுடன் அனுப்புகிறோம் ('...')
+            controlsHTML = `<button class="btn-primary" style="width:60px; height:35px; padding:0; font-size:14px; font-weight:700; box-shadow:none; border-radius:10px;" onclick="updateQty('${item.id}', 1)">${translations[currentLang].add}</button>`;
         } else {
             controlsHTML = `
                 <div class="qty-controls">
-                    <button class="qty-btn" onclick="updateQty(${item.id}, -1)">-</button>
+                    <!-- ⭐ பிழை திருத்தம் இங்கே: item.id-ஐ ஒற்றை மேற்கோள் குறியுடன் அனுப்புகிறோம் ('...') -->
+                    <button class="qty-btn" onclick="updateQty('${item.id}', -1)">-</button>
                     <div class="qty-val" id="qty-${item.id}">${currentQty}</div>
-                    <button class="qty-btn" onclick="updateQty(${item.id}, 1)">+</button>
+                    <!-- ⭐ பிழை திருத்தம் இங்கே: item.id-ஐ ஒற்றை மேற்கோள் குறியுடன் அனுப்புகிறோம் ('...') -->
+                    <button class="qty-btn" onclick="updateQty('${item.id}', 1)">+</button>
                 </div>`;
         }
 
-        const imageUrl = item.imageUrl || https://placehold.co/80x80/${isUnavailable ? 'e5e7eb' : 'f77f00'}/ffffff?text=${item.name.substring(0,2)};
+        const imageUrl = item.imageUrl || `https://placehold.co/80x80/${isUnavailable ? 'e5e7eb' : 'f77f00'}/ffffff?text=${item.name.substring(0,2)}`;
 
         card.innerHTML = `
             <img src="${imageUrl}" class="item-image" onerror="this.onerror=null;this.src='https://placehold.co/80x80/${isUnavailable ? 'e5e7eb' : 'f77f00'}/ffffff?text=Food'">
@@ -742,8 +745,8 @@
         const cartBar = document.getElementById('floatingCart');
         if (count > 0) {
             cartBar.style.display = "flex";
-            document.getElementById('itemCount').innerText = ${count} ${langText};
-            document.getElementById('totalPrice').innerText = ₹${total};
+            document.getElementById('itemCount').innerText = `${count} ${langText}`;
+            document.getElementById('totalPrice').innerText = `₹${total}`;
         } else {
             cartBar.style.display = "none";
         }
@@ -780,14 +783,14 @@
         const cartItems = menuItems.filter(i => i.qty > 0);
         const total = cartItems.reduce((sum, i) => sum + (i.price * i.qty), 0);
         
-        let itemsListWA = cartItems.map(i => * ${i.name} x ${i.qty} (₹${i.price * i.qty})).join("%0A");
-        let itemsListSheet = cartItems.map(i => ${i.name} (${i.qty}) - ₹${i.price * i.qty}).join(" | ");
+        let itemsListWA = cartItems.map(i => `* ${i.name} x ${i.qty} (₹${i.price * i.qty})`).join("%0A");
+        let itemsListSheet = cartItems.map(i => `${i.name} (${i.qty}) - ₹${i.price * i.qty}`).join(" | ");
 
         const t = translations[currentLang];
 
-        const msg = ${t.orderMessageTitle}%0A%0A*கடை:* ${shopName || SHOP_ID.toUpperCase()}%0A${t.customer}: ${name}%0A${t.mobile}: ${phone}%0A*முகவரி:* ${address}%0A%0A${t.orderDetails}%0A${itemsListWA}%0A%0A${t.totalBill}: *₹${total}*%0A%0A${t.confirmationNote};
+        const msg = `${t.orderMessageTitle}%0A%0A*கடை:* ${shopName || SHOP_ID.toUpperCase()}%0A${t.customer}: ${name}%0A${t.mobile}: ${phone}%0A*முகவரி:* ${address}%0A%0A${t.orderDetails}%0A${itemsListWA}%0A%0A${t.totalBill}: *₹${total}*%0A%0A${t.confirmationNote}`;
         
-        const waLink = https://wa.me/${ownerNumber}?text=${msg};
+        const waLink = `https://wa.me/${ownerNumber}?text=${msg}`;
 
         // UI Feedback: ஆர்டர் சமர்ப்பிக்கப்படுகிறது என்று காட்ட
         const btn = document.getElementById('placeOrderBtn');
@@ -846,7 +849,7 @@
 
     // Helper: பிழை அல்லது எச்சரிக்கை செய்தியைக் காட்டுதல்
     function showError(msg) {
-        document.getElementById('menuContainer').innerHTML = <div class="loading-screen" style="color:red; text-align:center; font-weight:700; padding:20px;">${msg}</div>;
+        document.getElementById('menuContainer').innerHTML = `<div class="loading-screen" style="color:red; text-align:center; font-weight:700; padding:20px;">${msg}</div>`;
     }
     
     // Custom Alert மாற்று (alert() பயன்படுத்தாமல்)
@@ -855,8 +858,12 @@
         modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;display:flex;justify-content:center;align-items:center;';
         const box = document.createElement('div');
         box.style.cssText = 'background:white;padding:20px;border-radius:10px;max-width:300px;text-align:center;font-size:14px;box-shadow:0 5px 15px rgba(0,0,0,0.5); transform: translateY(0);';
-        box.innerHTML = <p>${message}</p><button onclick="this.parentNode.parentNode.remove()" class="btn-primary" style="margin-top:15px; padding:10px 15px; width:auto;">சரி (OK)</button>;
+        box.innerHTML = `<p>${message}</p><button onclick="this.parentNode.parentNode.remove()" class="btn-primary" style="margin-top:15px; padding:10px 15px; width:auto;">சரி (OK)</button>`;
         modal.appendChild(box);
         document.body.appendChild(modal);
     }
 </script>
+
+</body>
+</html>
+
