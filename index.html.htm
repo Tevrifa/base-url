@@ -12,8 +12,8 @@
     <style>
         /* --- அழகியலுக்கான CSS மேம்பாடுகள் (Aesthetic Improvements - Premium Design) --- */
         :root {
-            --primary-color: #f77f00; /* பிரதான ஆழமான ஆரஞ்சு (Warm Orange) */
-            --primary-dark: #c96500;
+            --primary-color: #008000; /* பிரதான வாட்ஸ்அப் பச்சை */
+            --primary-dark: #006400;
             --bg-color: #fcfcfc; /* மிக மென்மையான பின்னணி நிறம் */
             --white: #ffffff;
             --text-dark: #1f2937; /* டார்க் கிரே */
@@ -261,7 +261,7 @@
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 5px 20px rgba(247, 127, 0, 0.4);
+            box-shadow: 0 5px 20px rgba(0, 128, 0, 0.4); /* பச்சை நிழல் */
             transition: background 0.3s, transform 0.1s;
         }
         .btn-primary:active {
@@ -278,7 +278,7 @@
             /* Google Review Button */
             width: 100%;
             padding: 12px;
-            background: #fff0e0; 
+            background: #e6ffe6; /* மிக லேசான பச்சை */
             color: var(--primary-dark);
             border: 1px solid var(--primary-dark); 
             border-radius: 12px;
@@ -290,7 +290,7 @@
         }
         .btn-secondary:active {
             transform: scale(0.99);
-            background: #ffe3c9; 
+            background: #ccffcc; 
         }
 
         /* --- Modal Overlays & Sheets --- */
@@ -358,7 +358,7 @@
         }
         .input-field:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(247, 127, 0, 0.2);
+            box-shadow: 0 0 0 3px rgba(0, 128, 0, 0.2); /* பச்சை நிறத்தில் கவனம் */
             outline: none;
         }
 
@@ -473,7 +473,7 @@
 <!-- நன்றி திரை Modal (Thank You Modal) - Google Review அம்சத்துடன் -->
 <div class="modal-overlay" id="thankYouModal">
     <div class="modal-sheet" style="text-align: center; border-radius: 20px; padding: 30px; align-self: center; max-width: 350px;">
-        <div class="thankyou-icon">🧡</div> 
+        <div class="thankyou-icon">💚</div> <!-- வாட்ஸ்அப் பச்சை ஐகான் -->
         <div class="modal-title" data-key="thankYouTitle">ஆர்டர் சமர்ப்பிக்கப்பட்டது!</div>
         <div class="thankyou-details" data-key="thankYouDetails">உங்கள் ஆர்டர் விவரங்கள் கடையின் WhatsApp-க்கு அனுப்ப தயாராக உள்ளது. இப்போது தொடரவும்.</div>
         
@@ -489,7 +489,7 @@
 <!-- Custom Alert Modal (பிழை அல்லது தகவல் அறிவிப்புக்கு) -->
 <div class="modal-overlay" id="customAlertModal" onclick="closeCustomAlert(event)">
     <div class="modal-sheet" style="text-align: center; border-radius: 20px; padding: 25px; align-self: center; max-width: 350px;">
-        <div class="modal-title" id="customAlertTitle" style="margin-bottom: 10px;">பிழை</div>
+        <div class="modal-title" id="customAlertTitle" style="margin-bottom: 10px;">அறிவிப்பு</div>
         <div class="thankyou-details" id="customAlertMessage" style="margin-bottom: 0;"></div>
         <button class="btn-primary" onclick="closeCustomAlert()" style="margin-top: 20px;">சரி</button>
     </div>
@@ -498,9 +498,8 @@
 
 <script>
     // ⚠️⚠️⚠️ Google Apps Script URL - Uṅkaḷ Google Apps Script Link-ai Iṅku Cerkkavum ⚠️⚠️⚠️
-    // 📢 முக்கிய குறிப்பு: 404 error வந்தால், உங்கள் Apps Script-ன் Deployment Access-ஐ 'Anyone' என்று செக் செய்து 
-    // புதிய Deployment ID-ஐ காப்பி செய்து இந்த URL-ஐ மாற்றுங்கள்.
-    const scriptURL = "https://script.google.com/macros/s/AKfycby4D0cHOZLeGNWgpZh1phZxvPGz1MsZtuav8KSPI_eMuPCjJgz5j_tNOpsxquqIzyBR/exec"; 
+    // 👇 கீழே உள்ள URL-ஐ, நீங்கள் Deploy செய்த பின் பெறும் URL-ஆல் மாற்றவும். (Backend guide-ஐ பார்க்கவும்)
+    const scriptURL = "https://script.google.com/macros/s/YOUR_APPS_SCRIPT_DEPLOYMENT_ID/exec"; 
     
     // பன்மொழி அகராதி (Localization Dictionary)
     const translations = {
@@ -510,9 +509,9 @@
             yourName: "உங்கள் பெயர்", enterName: "பெயரை உள்ளிடவும்", mobileNumber: "மொபைல் எண்", 
             enterMobile: "10 இலக்க மொபைல் எண்", address: "முகவரி", enterAddress: "அறை எண், தெருப் பெயர்",
             placeOrderBtn: "WhatsApp வழியாக ஆர்டர் செய்யவும்", linkError: "❌ கடை லிங்க் தவறானது. Link-ன் முடிவில் ?shopId=your_id என்று சேர்த்துள்ளீர்களா என சரிபார்க்கவும்.",
-            networkError: "❌ இணைப்புப் பிழை. உங்கள் Apps Script URL மற்றும் Deployment Access ('Anyone') ஐ சரிபார்க்கவும். 404 எரருக்கு இதுவே காரணம்.", 
-            inactiveShop: "⚠️ இந்த கடை சேவை தற்காலிகமாக நிறுத்தப்பட்டுள்ளது.", noItems: "பொருட்கள் எதுவும் கிடைக்கவில்லை. MenuData JSON-ஐ சரிபார்க்கவும்.",
-            unavailableTitle: "❌ விற்று தீர்ந்தவை (Sold Out)", soldOut: "விற்று தீர்ந்தது", add: "சேர்க்க",
+            networkError: "❌ இணைப்புப் பிழை. Apps Script-ஐச் சரியாக Deploy செய்து அதன் URL-ஐ மாற்றிவிட்டீர்களா என சரிபார்க்கவும். 404 எரருக்கு இதுவே முக்கிய காரணம்.", 
+            inactiveShop: "⚠️ இந்த கடை சேவை தற்காலிகமாக நிறுத்தப்பட்டுள்ளது.", noItems: "பொருட்கள் எதுவும் கிடைக்கவில்லை.",
+            unavailableTitle: "❌ விற்று தீர்ந்தவை", soldOut: "விற்று தீர்ந்தது", add: "சேர்க்க",
             fillDetailsAlert: "⚠️ தயவுசெய்து பெயர், மொபைல் எண் மற்றும் முகவரி ஆகிய அனைத்து விவரங்களையும் நிரப்பவும்.",
             submittingOrder: "ஆர்டரைச் சமர்ப்பிக்கிறது...",
             orderMessageTitle: "💥 புதிய ஆர்டர்! 🛵",
@@ -523,7 +522,8 @@
             waContinue: "WhatsApp-க்கு தொடரவும்",
             reviewRequest: "உங்களுக்கு பிடித்திருந்தால், ஒரு நிமிடம் ஒதுக்கி Google-ல் மதிப்பாய்வு செய்யுங்கள்.",
             reviewBtn: "Google-ல் மதிப்பாய்வு செய்யவும் &nbsp; ⭐",
-            alertTitle: "அறிவிப்பு" 
+            alertTitle: "அறிவிப்பு",
+            ownerNumMissing: "❌ கடை உரிமையாளரின் WhatsApp எண் காணவில்லை. Google Sheet-ல் உள்ள Clients Sheet-ல் எண்ணைச் சரிபார்க்கவும்."
         },
         en: {
             loading: "Loading...", onlineOrder: "Online Order", loadingMenu: "Loading Menu...",
@@ -532,7 +532,7 @@
             enterMobile: "10 digit mobile number", address: "Address", enterAddress: "Room/Street name",
             placeOrderBtn: "Place Order via WhatsApp", linkError: "❌ Shop link is invalid. Please ensure you have added ?shopId=your_id at the end of the URL.",
             networkError: "❌ Connection Error. Check your Apps Script URL and Deployment Access ('Anyone'). This is the likely cause of 404.", 
-            inactiveShop: "⚠️ This shop service is temporarily paused.", noItems: "No items available. Check MenuData JSON.",
+            inactiveShop: "⚠️ This shop service is temporarily paused.", noItems: "No items available.",
             unavailableTitle: "❌ Sold Out Items", soldOut: "SOLD OUT", add: "ADD",
             fillDetailsAlert: "⚠️ Please fill in all details: Name, Mobile Number, and Address.",
             submittingOrder: "Submitting Order...",
@@ -544,7 +544,8 @@
             waContinue: "Continue to WhatsApp",
             reviewRequest: "If you liked our service, please take a moment to leave a review on Google.",
             reviewBtn: "Review on Google &nbsp; ⭐",
-            alertTitle: "Notification" 
+            alertTitle: "Notification",
+            ownerNumMissing: "❌ Shop owner's WhatsApp number is missing. Please check the number in the Clients sheet of your Google Sheet."
         },
         hi: {
             loading: "लोड हो रहा है...", onlineOrder: "ऑनलाइन ऑर्डर", loadingMenu: "मेन्यू लोड हो रहा है...", 
@@ -553,8 +554,8 @@
             enterMobile: "10 अंकों का मोबाइल नंबर", address: "पता", enterAddress: "कमरा नंबर, गली का नाम",
             placeOrderBtn: "WhatsApp द्वारा ऑर्डर करें", linkError: "❌ दुकान लिंक अमान्य है। कृपया सुनिश्चित करें कि आपने URL के अंत में ?shopId=your_id जोड़ा है।",
             networkError: "❌ कनेक्शन त्रुटि। अपने Apps Script URL और डिप्लॉयमेंट एक्सेस ('Anyone') की जांच करें। 404 त्रुटि का यही संभावित कारण है।", 
-            inactiveShop: "⚠️ इस दुकान की सेवा अस्थायी रूप से बंद है।", noItems: "कोई आइटम उपलब्ध नहीं है। MenuData JSON की जांच करें।",
-            unavailableTitle: "❌ बिके हुए आइटम (Sold Out)", soldOut: "बिक गया", add: "जोड़ें",
+            inactiveShop: "⚠️ इस दुकान की सेवा अस्थायी रूप से बंद है।", noItems: "कोई आइटम उपलब्ध नहीं है।",
+            unavailableTitle: "❌ बिके हुए आइटम", soldOut: "बिक गया", add: "जोड़ें",
             fillDetailsAlert: "⚠️ कृपया सभी विवरण भरें: नाम, मोबाइल नंबर और पता।",
             submittingOrder: "ऑर्डर सबमिट हो रहा है...",
             orderMessageTitle: "💥 नया ऑर्डर! 🛵",
@@ -565,7 +566,8 @@
             waContinue: "WhatsApp पर जारी रखें",
             reviewRequest: "अगर आपको हमारी सेवा पसंद आई, तो कृपया Google पर एक समीक्षा दें।",
             reviewBtn: "Google पर समीक्षा करें &nbsp; ⭐",
-            alertTitle: "सूचना" 
+            alertTitle: "सूचना",
+            ownerNumMissing: "❌ दुकान के मालिक का WhatsApp नंबर गायब है। कृपया Google Sheet की Clients Sheet में नंबर की जांच करें।"
         }
     };
 
@@ -606,6 +608,13 @@
         customAlert(message);
         document.getElementById('menuContainer').innerHTML = `<div class='loading-screen' style='color: #dc2626; font-weight: 600; text-align: left; padding: 20px;'>${message}</div>`;
         document.getElementById('floatingCart').classList.add('hidden');
+    }
+
+    // WhatsApp எண் வடிவமைப்பைச் சரிசெய்யும் செயல்பாடு (Clean Number Format)
+    function cleanPhoneNumber(number) {
+        if (!number) return '';
+        // '+' மற்றும் இடைவெளிகள் உட்பட இலக்கங்கள் அல்லாத அனைத்தையும் நீக்குகிறது.
+        return number.toString().replace(/\D/g, ''); 
     }
 
 
@@ -673,7 +682,7 @@
              // 404 எரரை இங்கே பிடித்து பயனருக்கு தெளிவான தகவல் கொடுக்க
              if (!response.ok) {
                  if (response.status === 404) {
-                      throw new Error(translations[currentLang].networkError + " (404 Error: Check Apps Script Deployment Access)");
+                      throw new Error(translations[currentLang].networkError); // Network error-ஐ காட்டும்
                  }
                  throw new Error('Network response was not ok. Status: ' + response.status);
              }
@@ -681,7 +690,8 @@
         })
         .then(data => {
             if (data.status === "ACTIVE") {
-                ownerNumber = data.ownerNumber;
+                // உரிமையாளரின் எண்ணை clean செய்ய
+                ownerNumber = cleanPhoneNumber(data.ownerNumber); 
                 shopName = data.shopName; 
                 reviewLink = data.reviewLink && data.reviewLink.trim() !== '' ? data.reviewLink.trim() : ''; 
                 
@@ -703,7 +713,8 @@
         })
         .catch(error => {
             console.error("Fetch Shop Data Error:", error);
-            showError(`${error.message}`);
+            // அனைத்து பிழைகளையும் Network Error-ஆகவே காண்பிப்பது நல்லது
+            showError(`${translations[currentLang].networkError}. <br><br> (${error.message})`);
         });
     }
 
@@ -769,10 +780,10 @@
         }
 
         // Image URL இல்லையென்றால் placeholder-ஐ காட்டவும்
-        const imageUrl = item.imageUrl || `https://placehold.co/80x80/${isUnavailable ? 'e5e7eb' : 'f77f00'}/ffffff?text=Food`;
+        const imageUrl = item.imageUrl || `https://placehold.co/80x80/${isUnavailable ? 'e5e7eb' : '008000'}/ffffff?text=Food`;
 
         card.innerHTML = `
-            <img src="${imageUrl}" class="item-image" onerror="this.onerror=null;this.src='https://placehold.co/80x80/${isUnavailable ? 'e5e7eb' : 'f77f00'}/ffffff?text=Food'">
+            <img src="${imageUrl}" class="item-image" onerror="this.onerror=null;this.src='https://placehold.co/80x80/${isUnavailable ? 'e5e7eb' : '008000'}/ffffff?text=Food'">
             <div class="item-details">
                 <span class="item-name">${item.name}</span>
                 <span class="item-price">₹${item.price}</span>
@@ -845,6 +856,16 @@
         // Checkout Modal-ஐ மூடுக
         closeCheckout(); 
 
+        // 🚨 உரிமையாளரின் WhatsApp எண்ணைச் சரிபார்த்து சுத்தம் செய்க (ஏற்கனவே cleanPhoneNumber() மூலம் செய்யப்பட்டுள்ளது)
+        const cleanOwnerNumber = ownerNumber;
+        
+        if (!cleanOwnerNumber || cleanOwnerNumber.length < 10) {
+            customAlert(translations[currentLang].ownerNumMissing);
+            btn.innerText = originalBtnText;
+            btn.disabled = false;
+            return; 
+        }
+
         const cartItems = menuItems.filter(i => i.qty > 0);
         const total = cartItems.reduce((sum, i) => sum + (i.price * i.qty), 0);
         
@@ -855,7 +876,8 @@
 
         const msg = `${t.orderMessageTitle}%0A%0A*கடை:* ${shopName || SHOP_ID.toUpperCase()}%0A${t.customer}: ${name}%0A${t.mobile}: ${phone}%0A*முகவரி:* ${address}%0A%0A${t.orderDetails}%0A${itemsListWA}%0A%0A${t.totalBill}: *₹${total}*%0A%0A${t.confirmationNote}`;
         
-        const waLink = `https://wa.me/${ownerNumber}?text=${msg}`;
+        // சுத்தம் செய்யப்பட்ட எண்ணுடன் WA link-ஐ உருவாக்கு
+        const waLink = `https://wa.me/${cleanOwnerNumber}?text=${msg}`;
 
         // UI Feedback: ஆர்டர் சமர்ப்பிக்கப்படுகிறது என்று காட்ட
         btn.innerHTML = `<div class="spinner" style="width: 20px; height: 20px; border-width: 3px; margin: 0 10px 0 0; display: inline-block;"></div> ${translations[currentLang].submittingOrder}`;
@@ -863,7 +885,6 @@
 
         // Google Sheet-க்கு டேட்டாவை அனுப்புதல் (Background Process)
         try {
-            // Note: 'no-cors' காரணமாக, fetch ஸ்டேட்டஸை நேரடியாக அறிய முடியாது. எனினும், network failure-ஐ பிடித்து எச்சரிக்கை காட்டுகிறோம்.
             await fetch(scriptURL, {
                 method: 'POST',
                 mode: 'no-cors', // Apps Script-க்கு இது அவசியம்
@@ -882,10 +903,8 @@
             // Network error வரவில்லை என்றால், WA link-ஐ காண்பிக்கிறோம்.
             showThankYou(waLink); 
         } catch (err) {
-            // Hard network error (Ex: DNS failure, actual 404 from host) வந்தால்
+            // Hard network error (Ex: DNS failure, actual 404 from host) வந்தால், பயனருக்கு எச்சரிக்கை கொடுத்து, WA-வில் தொடர வழி செய்கிறோம்.
             customAlert(`❌ ${translations[currentLang].networkError}. <br><br> ${err.message}.`);
-            
-            // பிழை வந்தாலும், WA link-ஐ காண்பித்து ஆர்டர் process-ஐ முடிக்க உதவுகிறோம்.
             showThankYou(waLink); 
         } finally {
             // பட்டனை மீண்டும் அதன் பழைய நிலைக்கு கொண்டு வரவும்
@@ -913,7 +932,6 @@
 </script>
 </body>
 </html>
-
 
 
 
